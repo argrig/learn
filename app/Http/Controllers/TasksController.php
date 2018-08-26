@@ -8,8 +8,8 @@ use App\Task ;
 
 class TasksController extends Controller
 {
-	public function test() {
-	  return view('test') ;
+	public function test(Request $request) {
+	  return view('test')->with(["dt" => $request->session()->all()]) ;
   }
   public function store() {
     $task = new Task() ;
