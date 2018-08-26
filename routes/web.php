@@ -11,18 +11,12 @@
 |
 */
 
-Route::get('/', function () {
-    return "OK!";
-});
+Route::get('/', "TasksController@home");
+Route::get('/{any}', "TasksController@home");
 
-Route::get('/hello/{name}',function($name){
-  echo "<h1>Hello, $name</h1>" ;
-});
 
-Route::get('test','TasksController@test') ;
-Route::get('tasks/create',  'TasksController@create');
-Route::post('tasks',  'TasksController@store');
+//Route::get('test','TasksController@test') ;
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+//Route::get('/home', 'HomeController@index')->name('home');

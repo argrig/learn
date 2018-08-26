@@ -21,22 +21,22 @@ nav.navbar.navbar-expand-md.navbar-fixed-top.mynav
     data: function() {
       return {
         lmenu:[
-          {class:"fa fa-home", id:"home", href:"#", title:"Домой", text:"Домой"},
-          {class:"fa fa-pencil", id:"edit", href:"#", title:"Редактировать", text:"Редактировать", 
+          {class:"fa fa-home", id:"home", href:"/home", title:"Домой"},
+          {class:"fa fa-pencil", id:"edit", href:"#", title:"Редактировать", 
             subitems:[
-              {class:"fa fa-question-circle dropdown-item", href:"#", title:"Задачи"},
-              {class:"fa fa-check-circle dropdown-item", href:"#", title:"Тесты"},
-              {class:"fa fa-info-circle dropdown-item", href:"#", title:"Теория"} 
+              {class:"fa fa-question-circle dropdown-item", id:"1", href:"/edit/problem", title:"Задачи"},
+              {class:"fa fa-check-circle dropdown-item", id:"2", href:"/edit/test", title:"Тесты"},
+              {class:"fa fa-info-circle dropdown-item", id:"3", href:"/edit/theory", title:"Теория"} 
             ]
           },
-          {class:"fa fa-question-circle", id:"problem", href:"#", title:"Задачи"},
-          {class:"fa fa-check-circle", id:"test", href:"#", title:"Тесты"},
-          {class:"fa fa-info-circle", id:"theory", href:"#", title:"Теория"},
-          {class:"fa fa-bar-chart", id:"stats", href:"#", title:"Статистика"},
+          {class:"fa fa-question-circle", id:"problem", href:"/problem", title:"Задачи"},
+          {class:"fa fa-check-circle", id:"test", href:"/test", title:"Тесты"},
+          {class:"fa fa-info-circle", id:"theory", href:"/theory", title:"Теория"},
+          {class:"fa fa-bar-chart", id:"stats", href:"/stats", title:"Статистика"},
         ],
         rmenu:[
-          {class:"fa fa-user-plus", id:"register", href:"#", title:"Регистрация"},
-          {class:"fa fa-sign-in", id:"login", href:"#", title:"Вход"},
+          {class:"fa fa-user-plus", id:"register", href:"/register", title:"Регистрация"},
+          {class:"fa fa-sign-in", id:"login", href:"/login", title:"Вход"},
         ],
         isMounted:false,
       }      
