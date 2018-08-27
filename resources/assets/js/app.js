@@ -19,6 +19,7 @@ Vue.use(VueRouter) ;
 
 Vue.component('mymenu', require('./components/MyMenu.vue'));
 Vue.component('menuItem', require('./components/MenuItem.vue'));
+Vue.component('StatusBar', require('./components/StatusBar.vue'));
 
 const Home = Vue.component('Home', require('./components/Home.vue'));
 

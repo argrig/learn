@@ -22,15 +22,15 @@ nav.navbar.navbar-expand-md.navbar-fixed-top.mynav
       return {
         lmenu:[
           {class:"fa fa-home", id:"home", href:"/home", title:"Домой"},
-          {class:"fa fa-pencil", id:"edit", href:"#", title:"Редактировать", 
+          {class:"fa fa-pencil-square-o", id:"edit", href:"#", title:"Редактировать", 
             subitems:[
               {class:"fa fa-question-circle dropdown-item", id:"1", href:"/edit/problem", title:"Задачи"},
-              {class:"fa fa-check-circle dropdown-item", id:"2", href:"/edit/test", title:"Тесты"},
+              {class:"fa fa-check-square-o dropdown-item", id:"2", href:"/edit/test", title:"Тесты"},
               {class:"fa fa-info-circle dropdown-item", id:"3", href:"/edit/theory", title:"Теория"} 
             ]
           },
           {class:"fa fa-question-circle", id:"problem", href:"/problem", title:"Задачи"},
-          {class:"fa fa-check-circle", id:"test", href:"/test", title:"Тесты"},
+          {class:"fa fa-check-square-o", id:"test", href:"/test", title:"Тесты"},
           {class:"fa fa-info-circle", id:"theory", href:"/theory", title:"Теория"},
           {class:"fa fa-bar-chart", id:"stats", href:"/stats", title:"Статистика"},
         ],
