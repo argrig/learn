@@ -1,0 +1,13 @@
+{
+  "Login" : "Вход",
+  "Register" : "Регистрация",
+  "Password" : "Пароль",
+  "Remember Me" : "Запомни меня",
+  "Forgot Your Password?" : "Забыли пароль?",
+  "E-Mail Address" : "Адрес эл. почты",
+  "Name" : "Имя",
+  "Confirm Password" : "Подтвердите пароль",
+  "Reset Password" : "Сброс пароля",
+  "Send Password Reset Link" : "Отправить ссылку на сброс пароля",
+  "Algebra & Geometry" : "Алгебра и Геометрия"
+}

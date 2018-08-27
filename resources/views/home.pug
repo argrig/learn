@@ -1,0 +1,8 @@
+extends layouts/app
+block menu
+  mymenu( appname=__(config('app.name')) )
+block content
+  main.container(role="main")
+    router-view
+block statusbar
+  status-bar
