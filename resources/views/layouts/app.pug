@@ -7,9 +7,22 @@ html(lang=str_replace('_', '-', app()->getLocale()))
     //CSRF Token
     meta(name="csrf-token" content=csrf_token())
     title #{__(config('app.name'))}
+
     //Scripts
-    script(src=asset('js/app.js') defer)
-    block scripts
+    script(src=asset('js/app.js') defer) 
+
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML")
+    //    script(defer)
+    //      |  window.MathJax.Hub.Config({
+    //      |    tex2jax: {
+    //      |      inlineMath: [['$','$'], ['\\(','\\)']],
+    //      |      processEscapes: true,
+    //      |    },
+    //      |    skipStartupTypeset: true,
+    //      |    "HTML-CSS":{scale:105},
+    //      |    //TeX: { equationNumbers: { autoNumber: "AMS" } }
+    //      |  });
+
     //Fonts
     link(rel="dns-prefetch" href="https://fonts.gstatic.com")
     link(href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css")

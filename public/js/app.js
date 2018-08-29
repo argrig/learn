@@ -14296,24 +14296,12 @@ module.exports = __webpack_require__(56);
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_router__ = __webpack_require__(66);
-
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
-
+__webpack_require__(122);
 __webpack_require__(16);
 
 window.Vue = __webpack_require__(39);
 
 Vue.use(__WEBPACK_IMPORTED_MODULE_0_vue_router__["a" /* default */]);
-
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
 
 Vue.component('mymenu', __webpack_require__(42));
 Vue.component('menuItem', __webpack_require__(48));
@@ -47791,41 +47779,37 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "nav",
-    { staticClass: "navbar navbar-expand-md navbar-fixed-top mynav" },
-    [
-      _c("div", { staticClass: "navbar-brand mybrand" }, [
-        _c("img", {
-          ref: "mylogo",
-          staticClass: "mylogo",
-          attrs: { src: "img/agplusmini.png" }
-        }),
-        _c("span", { style: _vm.myLogoText }, [_vm._v(_vm._s(_vm.appname))])
-      ]),
-      _vm._m(0),
-      _c(
-        "div",
-        { staticClass: "collapse navbar-collapse", attrs: { id: "mynav" } },
-        [
-          _c(
-            "ul",
-            { staticClass: "navbar-nav mr-auto", attrs: { id: "lmenu" } },
-            _vm._l(_vm.lmenu, function(item) {
-              return _c("menu-item", { key: item.id, attrs: { dt: item } })
-            })
-          ),
-          _c(
-            "ul",
-            { staticClass: "navbar-nav ml-auto", attrs: { id: "rmenu" } },
-            _vm._l(_vm.rmenu, function(item) {
-              return _c("menu-item", { key: item.id, attrs: { dt: item } })
-            })
-          )
-        ]
-      )
-    ]
-  )
+  return _c("nav", { staticClass: "navbar navbar-expand-md fixed-top mynav" }, [
+    _c("div", { staticClass: "navbar-brand mybrand" }, [
+      _c("img", {
+        ref: "mylogo",
+        staticClass: "mylogo",
+        attrs: { src: "img/agplusmini.png" }
+      }),
+      _c("span", { style: _vm.myLogoText }, [_vm._v(_vm._s(_vm.appname))])
+    ]),
+    _vm._m(0),
+    _c(
+      "div",
+      { staticClass: "collapse navbar-collapse", attrs: { id: "mynav" } },
+      [
+        _c(
+          "ul",
+          { staticClass: "navbar-nav mr-auto", attrs: { id: "lmenu" } },
+          _vm._l(_vm.lmenu, function(item) {
+            return _c("menu-item", { key: item.id, attrs: { dt: item } })
+          })
+        ),
+        _c(
+          "ul",
+          { staticClass: "navbar-nav ml-auto", attrs: { id: "rmenu" } },
+          _vm._l(_vm.rmenu, function(item) {
+            return _c("menu-item", { key: item.id, attrs: { dt: item } })
+          })
+        )
+      ]
+    )
+  ])
 }
 var staticRenderFns = [
   function() {
@@ -51703,13 +51687,28 @@ exports.push([module.i, "\n.tmp[data-v-26bc8364]{\n  text-align: center ;\n}\n",
 //
 //
 //
+//
+//
+//
+//
 
 module.exports = {
   mounted: function mounted() {
     console.log('Problem editor mounted...');
   },
 
-  props: []
+  data: function data() {
+    return {
+      mathjaxSrc: "$\\int f(x)$"
+    };
+  },
+  methods: {
+    render: function render(event) {
+      console.log("render executed..." + this.$refs.rendered.innerHTML);
+      console.log(window.MathJax ? "MJ initialized" : "NO");
+      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, this.$refs.rendered]);
+    }
+  }
 };
 
 /***/ }),
@@ -51720,7 +51719,41 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("h1", { staticClass: "tmp" }, [_vm._v("Редактор задач здесь...")])
+  return _c("div", [
+    _c("h1", [_vm._v("Тест рендеринга Mathjax")]),
+    _c("textarea", {
+      directives: [
+        {
+          name: "model",
+          rawName: "v-model",
+          value: _vm.mathjaxSrc,
+          expression: "mathjaxSrc"
+        }
+      ],
+      attrs: { rows: "5", cols: "50", label: "mathjaxTest" },
+      domProps: { value: _vm.mathjaxSrc },
+      on: {
+        input: function($event) {
+          if ($event.target.composing) {
+            return
+          }
+          _vm.mathjaxSrc = $event.target.value
+        }
+      }
+    }),
+    _c(
+      "button",
+      {
+        attrs: { type: "button", label: "отобразить" },
+        on: { click: this.render }
+      },
+      [_vm._v("Отобразить")]
+    ),
+    _c("div", {
+      ref: "rendered",
+      domProps: { innerHTML: _vm._s(_vm.mathjaxSrc) }
+    })
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -52074,7 +52107,7 @@ exports = module.exports = __webpack_require__(12)(false);
 
 
 // module
-exports.push([module.i, "\n.myfooter[data-v-79cd63cc] {\n  position:absolute ;\n  bottom:0;\n  padding:0;\n  width:100% ;\n  background-color:  #ddd ;\n  font-family:Tahoma ;\n  font-weight: bold ;\n}\n.copyright[data-v-79cd63cc] {\n  padding-right: 5px ;\n  text-align:right ;\n}\n", ""]);
+exports.push([module.i, "\n.myfooter[data-v-79cd63cc] {\n  position:fixed ;\n  bottom:0;\n  padding:0;\n  width:100% ;\n  background-color:  #ddd ;\n  font-family:Tahoma ;\n  font-weight: bold ;\n}\n.copyright[data-v-79cd63cc] {\n  padding-right: 5px ;\n  text-align:right ;\n}\n", ""]);
 
 // exports
 
@@ -52126,6 +52159,20 @@ if (false) {
     require("vue-hot-reload-api")      .rerender("data-v-79cd63cc", module.exports)
   }
 }
+
+/***/ }),
+/* 122 */
+/***/ (function(module, exports) {
+
+window.MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    processEscapes: true
+  },
+  skipStartupTypeset: true,
+  "HTML-CSS": { scale: 105 }
+  //TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
 
 /***/ })
 /******/ ]);

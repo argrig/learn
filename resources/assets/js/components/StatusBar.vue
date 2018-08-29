@@ -19,7 +19,7 @@
 </script>
 <style scoped>
 .myfooter {
-  position:absolute ;
+  position:fixed ;
   bottom:0;
   padding:0;
   width:100% ;

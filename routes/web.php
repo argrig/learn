@@ -11,8 +11,8 @@
 |
 */
 
-Route::get('/', "TasksController@home");
-Route::get('/{any}', "TasksController@home");
+//Route::get('/', "TasksController@home");
+Route::get('{all}', "TasksController@home")->where(['all'=>'.*']);
 
 
 //Route::get('test','TasksController@test') ;

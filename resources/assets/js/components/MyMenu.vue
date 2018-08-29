@@ -1,5 +1,5 @@
 <template lang="pug">
-nav.navbar.navbar-expand-md.navbar-fixed-top.mynav
+nav.navbar.navbar-expand-md.fixed-top.mynav
     .navbar-brand.mybrand
       img.mylogo(ref="mylogo" src="img/agplusmini.png")
       span(:style="myLogoText") {{ appname }}
