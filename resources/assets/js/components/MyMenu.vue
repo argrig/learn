@@ -1,8 +1,8 @@
 <template lang="pug">
 nav.navbar.navbar-expand-md.fixed-top.mynav
     .navbar-brand.mybrand
-      img.mylogo(ref="mylogo" src="img/agplusmini.png")
-      span(:style="myLogoText") {{ appname }}
+      img.mylogo(ref="mylogo" src="img/agplusmidi.png")
+      span.my-logo-text {{ appname }}
     button.navbar-toggler.navbar-light(type="button" data-toggle="collapse" data-target="#mynav" aria-controls="mynav" aria-expanded="false" aria-label="Показать меню")
       span.navbar-toggler-icon
     .collapse.navbar-collapse#mynav
@@ -42,23 +42,28 @@ nav.navbar.navbar-expand-md.fixed-top.mynav
       }      
     },
     props:{appname:{default:"Алгебра"}},
-    computed: {
-      myLogoText: function() {
-        if(this.isMounted == true) {
-          left = this.$refs.mylogo.clientWidth + "px" ;
-          return {paddingLeft: left, fontWeight:"bold"} ;
-        }
-      }
-    }
+    //computed: {
+     // myLogoText: function() {
+       // if(this.isMounted == true) {
+         // left = this.$refs.mylogo.clientWidth + "px" ;
+          //return {paddingLeft: left, fontWeight:"bold"} ;
+       // }
+      //}
+    //}
   } ;
 </script>
-<style scoped>
+<style lang="scss" scoped>
+  @import "myvars.scss" ; 
   .mynav {
-    background-color:#ddd ;
+    background-color: $bg-dark ;
     padding:0;
   }
   .mybrand{
     padding:0;
+  }
+  .my-logo-text{
+    padding-left: $logo-width ;
+    font-weight: bold ;
   }
   .mylogo {
  	  position: absolute;
@@ -66,5 +71,6 @@ nav.navbar.navbar-expand-md.fixed-top.mynav
     z-index: 1;
     left:0px;
     top: 0px; 
+    height: $logo-height ;
   }
 </style>

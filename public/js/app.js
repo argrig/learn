@@ -47609,7 +47609,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(43)
+  __webpack_require__(127)
 }
 var normalizeComponent = __webpack_require__(3)
 /* script */
@@ -47654,46 +47654,8 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 43 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(44);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(13)("da28b964", content, false, {});
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-c2a22ebc\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./MyMenu.vue", function() {
-     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-c2a22ebc\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./MyMenu.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 44 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(12)(false);
-// imports
-
-
-// module
-exports.push([module.i, "\n.mynav[data-v-c2a22ebc] {\n   background-color:#ddd ;\n   padding:0;\n}\n.mybrand[data-v-c2a22ebc]{\n   padding:0;\n}\n.mylogo[data-v-c2a22ebc] {\n\t  position: absolute;\n   padding:0 ;\n   z-index: 1;\n   left:0px;\n   top: 0px;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
+/* 43 */,
+/* 44 */,
 /* 45 */
 /***/ (function(module, exports) {
 
@@ -47760,15 +47722,15 @@ module.exports = {
       isMounted: false
     };
   },
-  props: { appname: { default: "Алгебра" } },
-  computed: {
-    myLogoText: function myLogoText() {
-      if (this.isMounted == true) {
-        left = this.$refs.mylogo.clientWidth + "px";
-        return { paddingLeft: left, fontWeight: "bold" };
-      }
-    }
-  }
+  props: { appname: { default: "Алгебра" } }
+  //computed: {
+  // myLogoText: function() {
+  // if(this.isMounted == true) {
+  // left = this.$refs.mylogo.clientWidth + "px" ;
+  //return {paddingLeft: left, fontWeight:"bold"} ;
+  // }
+  //}
+  //}
 };
 
 /***/ }),
@@ -47784,9 +47746,9 @@ var render = function() {
       _c("img", {
         ref: "mylogo",
         staticClass: "mylogo",
-        attrs: { src: "img/agplusmini.png" }
+        attrs: { src: "img/agplusmidi.png" }
       }),
-      _c("span", { style: _vm.myLogoText }, [_vm._v(_vm._s(_vm.appname))])
+      _c("span", { staticClass: "my-logo-text" }, [_vm._v(_vm._s(_vm.appname))])
     ]),
     _vm._m(0),
     _c(
@@ -47849,7 +47811,7 @@ if (false) {
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(49)
+  __webpack_require__(131)
 }
 var normalizeComponent = __webpack_require__(3)
 /* script */
@@ -47894,46 +47856,8 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 49 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(50);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(13)("1b133368", content, false, {});
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-197c456e\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./MenuItem.vue", function() {
-     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-197c456e\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./MenuItem.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 50 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(12)(false);
-// imports
-
-
-// module
-exports.push([module.i, "\n.submenu[data-v-197c456e]{\n  background-color: #ddd ;\n}\n.mymenuitem[data-v-197c456e]{\n  color:  #555;\n}\n.mymenutext[data-v-197c456e] {\n  font-family: Tahoma ;\n  font-weight: bold ;\n  padding-left: 2px ;\n}\nli[data-v-197c456e]:hover {\n   border-bottom: 1px solid ;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
+/* 49 */,
+/* 50 */,
 /* 51 */
 /***/ (function(module, exports) {
 
@@ -52028,7 +51952,7 @@ if (false) {
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(118)
+  __webpack_require__(129)
 }
 var normalizeComponent = __webpack_require__(3)
 /* script */
@@ -52073,46 +51997,8 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 118 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(119);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(13)("71afa016", content, false, {});
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-79cd63cc\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./StatusBar.vue", function() {
-     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-79cd63cc\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./StatusBar.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 119 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(12)(false);
-// imports
-
-
-// module
-exports.push([module.i, "\n.myfooter[data-v-79cd63cc] {\n  position:fixed ;\n  bottom:0;\n  padding:0;\n  width:100% ;\n  background-color:  #ddd ;\n  font-family:Tahoma ;\n  font-weight: bold ;\n}\n.copyright[data-v-79cd63cc] {\n  padding-right: 5px ;\n  text-align:right ;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
+/* 118 */,
+/* 119 */,
 /* 120 */
 /***/ (function(module, exports) {
 
@@ -52173,6 +52059,130 @@ window.MathJax.Hub.Config({
   "HTML-CSS": { scale: 105 }
   //TeX: { equationNumbers: { autoNumber: "AMS" } }
 });
+
+/***/ }),
+/* 123 */,
+/* 124 */,
+/* 125 */,
+/* 126 */,
+/* 127 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(128);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(13)("3320c38b", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-c2a22ebc\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/sass-loader/lib/loader.js!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./MyMenu.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-c2a22ebc\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/sass-loader/lib/loader.js!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./MyMenu.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 128 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(12)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.mynav[data-v-c2a22ebc] {\n  background-color: #ddd;\n  padding: 0;\n}\n.mybrand[data-v-c2a22ebc] {\n  padding: 0;\n}\n.my-logo-text[data-v-c2a22ebc] {\n  padding-left: 55px;\n  font-weight: bold;\n}\n.mylogo[data-v-c2a22ebc] {\n  position: absolute;\n  padding: 0;\n  z-index: 1;\n  left: 0px;\n  top: 0px;\n  height: 55px;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 129 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(130);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(13)("02e9faaa", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-79cd63cc\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/sass-loader/lib/loader.js!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./StatusBar.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-79cd63cc\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/sass-loader/lib/loader.js!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./StatusBar.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 130 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(12)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.myfooter[data-v-79cd63cc] {\n  position: fixed;\n  bottom: 0;\n  padding: 0;\n  width: 100%;\n  background-color: #ddd;\n  font-family: Tahoma;\n  font-weight: bold;\n}\n.copyright[data-v-79cd63cc] {\n  padding-right: 5px;\n  text-align: right;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 131 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(132);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(13)("7b3133ae", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-197c456e\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/sass-loader/lib/loader.js!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./MenuItem.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-197c456e\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/sass-loader/lib/loader.js!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./MenuItem.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 132 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(12)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.submenu[data-v-197c456e] {\n  background-color: #ddd;\n}\n.mymenuitem[data-v-197c456e] {\n  color: #444;\n}\n.mymenutext[data-v-197c456e] {\n  font-family: Tahoma;\n  font-weight: bold;\n  padding-left: 2px;\n  overflow: hidden;\n}\nli[data-v-197c456e]:hover {\n  border-bottom: 1px solid;\n}\n", ""]);
+
+// exports
+
 
 /***/ })
 /******/ ]);

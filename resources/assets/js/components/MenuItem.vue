@@ -20,17 +20,19 @@ li.nav-item.dropdown(v-else)
     props:['dt','item'],
   }
 </script>
-<style scoped>
+<style lang="scss" scoped>
+  @import "myvars" ;
 .submenu{
-  background-color: #ddd ;
+  background-color: $bg-dark ;
 }
 .mymenuitem{
-  color:  #555;
+  color: $fg-dark;
 }
 .mymenutext {
-  font-family: Tahoma ;
+  font-family: $title-font ;
   font-weight: bold ;
   padding-left: 2px ;
+  overflow: hidden ;
 }
 
 li:hover {

@@ -17,14 +17,15 @@
     }
   }
 </script>
-<style scoped>
+<style lang="scss" scoped>
+@import "myvars.scss" ;
 .myfooter {
   position:fixed ;
   bottom:0;
   padding:0;
   width:100% ;
-  background-color:  #ddd ;
-  font-family:Tahoma ;
+  background-color:  $bg-dark ;
+  font-family:$title-font ;
   font-weight: bold ;
 }
 .copyright {
