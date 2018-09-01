@@ -1,16 +1,17 @@
 <template lang="pug">
-  footer.myfooter
-    .float-right.copyright &copy; А. Григорянц, 2003 - {{this.copyRight}}
+  footer.myfooter(ref='statusRef')
+    .float-right.copyright &copy; А. Григорянц, 2003 &ndash; {{this.Year}}
 </template>
 
 <script>
   module.exports = {
     mounted() {
-      console.log('Status bar mounted...'+this.copyRight) ;
+      console.log('Status bar mounted...'+this.Year) ;
+      this.$bus.$emit('status-height',this.$refs.statusRef.clientHeight) ;
     },
     props:[],
     computed: {
-      copyRight: function() {
+      Year: function() {
         myDate=new Date() ;
         return myDate.getFullYear() ;
       }

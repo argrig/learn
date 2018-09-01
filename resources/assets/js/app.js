@@ -5,8 +5,11 @@ window.Vue = require('vue');
 import VueRouter from 'vue-router';
 Vue.use(VueRouter) ;
 
-Vue.component('mymenu', require('./components/MyMenu.vue'));
-Vue.component('menuItem', require('./components/MenuItem.vue'));
+Vue.prototype.$bus = new Vue(); 
+
+Vue.component('MyMenu', require('./components/MyMenu.vue'));
+Vue.component('MenuItem', require('./components/MenuItem.vue'));
+Vue.component('MyContent', require('./components/MyContent.vue'));
 Vue.component('StatusBar', require('./components/StatusBar.vue'));
 
 const Home = Vue.component('Home', require('./components/Home.vue'));
@@ -45,3 +48,4 @@ const app = new Vue({
   el: '#app',
   router
 });
+

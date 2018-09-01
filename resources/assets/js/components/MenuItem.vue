@@ -15,7 +15,6 @@ li.nav-item.dropdown(v-else)
 <script>
   module.exports = {
     mounted() {
-      console.log('Menu item mounted...')
     },
     props:['dt','item'],
   }
@@ -32,10 +31,9 @@ li.nav-item.dropdown(v-else)
   font-family: $title-font ;
   font-weight: bold ;
   padding-left: 2px ;
-  overflow: hidden ;
 }
 
 li:hover {
-   border-bottom: 1px solid ;
+   border-bottom: 2px solid ;
 }
 </style>

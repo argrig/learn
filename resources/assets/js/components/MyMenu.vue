@@ -1,7 +1,7 @@
-<template lang="pug">
-nav.navbar.navbar-expand-md.fixed-top.mynav
+<template lang="pug"> 
+nav.navbar.navbar-expand-md.fixed-top.mynav(ref="menuRef")
     .navbar-brand.mybrand
-      img.mylogo(ref="mylogo" src="img/agplusmidi.png")
+      img.mylogo(ref="mylogo" src="/img/agplusmidi.png")
       span.my-logo-text {{ appname }}
     button.navbar-toggler.navbar-light(type="button" data-toggle="collapse" data-target="#mynav" aria-controls="mynav" aria-expanded="false" aria-label="Показать меню")
       span.navbar-toggler-icon
@@ -13,10 +13,12 @@ nav.navbar.navbar-expand-md.fixed-top.mynav
 </template>
 
 <script>
+  //var bus = require('../bus.js').default ;
+  //var bus = new Vue() ;
   module.exports = {
     mounted() {
-      this.isMounted=true ;
-      console.log(this.myLeft)
+      console.log("Высота меню: " + this.$refs.menuRef.clientHeight);
+      this.$bus.$emit("menu-height", this.$refs.menuRef.clientHeight);
     },
     data: function() {
       return {
@@ -38,7 +40,6 @@ nav.navbar.navbar-expand-md.fixed-top.mynav
           {class:"fa fa-user-plus", id:"register", href:"/register", title:"Регистрация"},
           {class:"fa fa-sign-in", id:"login", href:"/login", title:"Вход"},
         ],
-        isMounted:false,
       }      
     },
     props:{appname:{default:"Алгебра"}},

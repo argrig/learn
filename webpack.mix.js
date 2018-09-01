@@ -15,7 +15,7 @@ let mix = require('laravel-mix');
 
 mix.webpackConfig({
   watchOptions: {
-    ignored: /node_modules/
+    ignored: [/node_modules/,/vendor/,/storage/,/database/,/bootstrap/]
   }
 } || cb);
 
