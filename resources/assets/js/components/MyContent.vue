@@ -1,6 +1,7 @@
 <template lang="pug">
-  .container(:style="this.contentStyle")
-    router-view
+  main(role="main")
+    .container(:style="this.contentStyle")
+      router-view
 </template>
 
 <script>

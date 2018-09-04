@@ -1,20 +1,19 @@
 <template lang="pug"> 
-nav.navbar.navbar-expand-md.fixed-top.mynav(ref="menuRef")
-    .navbar-brand.mybrand
-      img.mylogo(ref="mylogo" src="/img/agplusmidi.png")
-      span.my-logo-text {{ appname }}
-    button.navbar-toggler.navbar-light(type="button" data-toggle="collapse" data-target="#mynav" aria-controls="mynav" aria-expanded="false" aria-label="Показать меню")
-      span.navbar-toggler-icon
-    .collapse.navbar-collapse#mynav
-      ul.navbar-nav.mr-auto#lmenu
-        menu-item(v-for="item in lmenu" :key="item.id" :dt="item")
-      ul.navbar-nav.ml-auto#rmenu
-        menu-item(v-for="item in rmenu" :key="item.id" :dt="item")
+header
+  nav.navbar.navbar-expand-md.fixed-top.mynav(ref="menuRef")
+      .navbar-brand.mybrand
+        img.mylogo(ref="mylogo" src="/img/agplusmidi.png")
+        span.my-logo-text {{ appname }}
+      button.navbar-toggler.navbar-light(type="button" data-toggle="collapse" data-target="#mynav" aria-controls="mynav" aria-expanded="false" aria-label="Показать меню")
+        span.navbar-toggler-icon
+      .collapse.navbar-collapse#mynav
+        ul.navbar-nav.mr-auto#lmenu
+          menu-item(v-for="item in lmenu" :key="item.id" :dt="item")
+        ul.navbar-nav.ml-auto#rmenu
+          menu-item(v-for="item in rmenu" :key="item.id" :dt="item")
 </template>
 
 <script>
-  //var bus = require('../bus.js').default ;
-  //var bus = new Vue() ;
   module.exports = {
     mounted() {
       console.log("Высота меню: " + this.$refs.menuRef.clientHeight);
@@ -24,7 +23,7 @@ nav.navbar.navbar-expand-md.fixed-top.mynav(ref="menuRef")
       return {
         lmenu:[
           {class:"fa fa-home", id:"home", href:"/home", title:"Домой"},
-          {class:"fa fa-pencil-square-o", id:"edit", href:"#", title:"Редактировать", 
+          {class:"fa fa-pencil-square-o", id:"edit", href:"", title:"Редактировать", 
             subitems:[
               {class:"fa fa-question-circle dropdown-item", id:"1", href:"/edit/problem", title:"Задачи"},
               {class:"fa fa-check-square-o dropdown-item", id:"2", href:"/edit/test", title:"Тесты"},

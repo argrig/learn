@@ -13,6 +13,7 @@
 
 //Route::get('/', "TasksController@home");
 Route::get('{all}', "TasksController@home")->where(['all'=>'.*']);
+Route::post("/edit/problem/add","ProblemController@add");
 
 
 //Route::get('test','TasksController@test') ;

@@ -3,7 +3,12 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 import VueRouter from 'vue-router';
+import BootstrapVue from 'bootstrap-vue';
+import axios from 'axios' ;
+import VueAxios from 'vue-axios' ;
 Vue.use(VueRouter) ;
+Vue.use(BootstrapVue) ;
+Vue.use(VueAxios, axios) ;
 
 Vue.prototype.$bus = new Vue(); 
 
