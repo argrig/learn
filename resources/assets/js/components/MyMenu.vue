@@ -16,7 +16,7 @@ header
 <script>
   module.exports = {
     mounted() {
-      console.log("Высота меню: " + this.$refs.menuRef.clientHeight);
+      //console.log("Высота меню: " + this.$refs.menuRef.clientHeight);
       this.$bus.$emit("menu-height", this.$refs.menuRef.clientHeight);
     },
     data: function() {

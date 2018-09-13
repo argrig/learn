@@ -6,7 +6,7 @@
 <script>
   module.exports = {
     mounted() {
-      console.log('Status bar mounted...'+this.Year) ;
+      //console.log('Status bar mounted...'+this.Year) ;
       this.$bus.$emit('status-height',this.$refs.statusRef.clientHeight) ;
     },
     props:[],

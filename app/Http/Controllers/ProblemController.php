@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Problem;
-use Illuminate\Http\Request;
+use App\Problem ;
+use Illuminate\Http\Request ;
+use Symfony\Component\Process\Process;
 
 class ProblemController extends Controller
 {
@@ -14,7 +15,15 @@ class ProblemController extends Controller
      */
     public function index()
     {
-        //
+      return response()->json(Problem::all()) ;
+    }
+
+    public function render($id) {
+      $problem = Problem::find($id) ;
+      $process = new Process("pwd") ;
+      $process->run() ;
+      $out = $process->getOutput();
+      return response()->json(["test"=>"$out",$problem]) ;
     }
 
     /**
@@ -35,7 +44,20 @@ class ProblemController extends Controller
      */
     public function store(Request $request)
     {
-        //
+      $resp=[];
+      $problem = new Problem ;
+      try { 
+        $problem->fill($request->input()) ;
+        $problem->save() ;
+        //Problem::insert($request->input()) ; 
+      } 
+      catch (\Illuminate\Database\QueryException  $e) {
+        return response()->json(["status"=>"error","message"=> $e->getMessage(),"code"=>$e->getCode()])
+          ->header("Cache-Control","no-cache") ;
+      }
+      return response()
+        ->json(["status"=>"ok"])
+        ->header("Cache-Control","no-cache") ;
     }
 
     /**

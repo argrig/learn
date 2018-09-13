@@ -23,7 +23,7 @@
     computed: {
       contentStyle: function () {
         var style = {paddingTop: this.menuHeight + 2 + "px", paddingBottom: this.statusHeight + 2 + "px"} ;
-        console.log('STYLE: ' + JSON.stringify(style)) ;
+        //console.log('STYLE: ' + JSON.stringify(style)) ;
         return style ;
       }
     }

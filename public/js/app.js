@@ -767,6 +767,115 @@ var eventOff = function eventOff(el, evtName, handler) {
 
 /***/ }),
 /* 7 */
+/***/ (function(module, exports) {
+
+/* globals __VUE_SSR_CONTEXT__ */
+
+// IMPORTANT: Do NOT use ES2015 features in this file.
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -785,7 +894,7 @@ if (typeof DEBUG !== 'undefined' && DEBUG) {
   ) }
 }
 
-var listToStyles = __webpack_require__(224)
+var listToStyles = __webpack_require__(225)
 
 /*
 type StyleObject = {
@@ -989,115 +1098,6 @@ function applyToTag (styleElement, obj) {
       styleElement.removeChild(styleElement.firstChild)
     }
     styleElement.appendChild(document.createTextNode(css))
-  }
-}
-
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports) {
-
-/* globals __VUE_SSR_CONTEXT__ */
-
-// IMPORTANT: Do NOT use ES2015 features in this file.
-// This module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle.
-
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  functionalTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier /* server only */
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
-
-  // ES6 modules interop
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
-
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-    options._compiled = true
-  }
-
-  // functional template
-  if (functionalTemplate) {
-    options.functional = true
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = injectStyles
-  }
-
-  if (hook) {
-    var functional = options.functional
-    var existing = functional
-      ? options.render
-      : options.beforeCreate
-
-    if (!functional) {
-      // inject component registration as beforeCreate hook
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    } else {
-      // for template-only hot-reload because in that case the render fn doesn't
-      // go through the normalizer
-      options._injectStyles = hook
-      // register for functioal component in vue file
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return existing(h, context)
-      }
-    }
-  }
-
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
   }
 }
 
@@ -22983,7 +22983,7 @@ var OBSERVER_CONFIG = {
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(78);
-module.exports = __webpack_require__(292);
+module.exports = __webpack_require__(301);
 
 
 /***/ }),
@@ -23000,38 +23000,41 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_vue_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_vue_axios__);
 __webpack_require__(79);
 __webpack_require__(80);
-
+window.s = { "role": "guest", "problems": [] }; //GLOBAL SESSION OBJECT
 window.Vue = __webpack_require__(102);
 
 
 
 
+window.MyInit = new (__webpack_require__(221).default)();
+//console.log("TEST OF PROBLEMS: " + JSON.stringify(s.problems)) ;
 Vue.use(__WEBPACK_IMPORTED_MODULE_0_vue_router__["a" /* default */]);
 Vue.use(__WEBPACK_IMPORTED_MODULE_1_bootstrap_vue__["a" /* default */]);
 Vue.use(__WEBPACK_IMPORTED_MODULE_3_vue_axios___default.a, __WEBPACK_IMPORTED_MODULE_2_axios___default.a);
-
 Vue.prototype.$bus = new Vue();
 
-Vue.component('MyMenu', __webpack_require__(221));
-Vue.component('MenuItem', __webpack_require__(227));
-Vue.component('MyContent', __webpack_require__(232));
-Vue.component('StatusBar', __webpack_require__(237));
+Vue.component('MyMenu', __webpack_require__(222));
+Vue.component('MenuItem', __webpack_require__(228));
+Vue.component('MyContent', __webpack_require__(233));
+Vue.component('StatusBar', __webpack_require__(238));
 
-var Home = Vue.component('Home', __webpack_require__(242));
+var Home = Vue.component('Home', __webpack_require__(243));
 
-var EditProblem = Vue.component('EditProblem', __webpack_require__(247));
-var EditTest = Vue.component('EditTest', __webpack_require__(252));
-var EditTheory = Vue.component('EditTheory', __webpack_require__(257));
+var EditProblem = Vue.component('EditProblem', __webpack_require__(248));
+var EditProblemAdd = Vue.component('EditProblemAdd', __webpack_require__(253));
+var EditTest = Vue.component('EditTest', __webpack_require__(258));
+var EditTheory = Vue.component('EditTheory', __webpack_require__(263));
 
-var Problem = Vue.component('Problem', __webpack_require__(262));
-var Test = Vue.component('Test', __webpack_require__(267));
-var Theory = Vue.component('Theory', __webpack_require__(272));
-var Stats = Vue.component('Stats', __webpack_require__(277));
+var Problem = Vue.component('Problem', __webpack_require__(268));
+var ProblemShow = Vue.component('ProblemShow', __webpack_require__(273));
+var Test = Vue.component('Test', __webpack_require__(276));
+var Theory = Vue.component('Theory', __webpack_require__(281));
+var Stats = Vue.component('Stats', __webpack_require__(286));
 
-var Register = Vue.component('Register', __webpack_require__(282));
-var Login = Vue.component('Login', __webpack_require__(287));
+var Register = Vue.component('Register', __webpack_require__(291));
+var Login = Vue.component('Login', __webpack_require__(296));
 
-var routes = [{ path: '/home', component: Home }, { path: '/edit/problem', component: EditProblem }, { path: '/edit/test', component: EditTest }, { path: '/edit/theory', component: EditTheory }, { path: '/problem', component: Problem }, { path: '/theory', component: Theory }, { path: '/test', component: Test }, { path: '/stats', component: Stats }, { path: '/login', component: Login }, { path: '/register', component: Register }];
+var routes = [{ path: '/home', component: Home }, { path: '/edit/problem', component: EditProblem }, { path: '/edit/test', component: EditTest }, { path: '/edit/theory', component: EditTheory }, { path: '/problem', component: Problem }, { path: '/problem/show/:id', component: ProblemShow }, { path: '/theory', component: Theory }, { path: '/test', component: Test }, { path: '/stats', component: Stats }, { path: '/login', component: Login }, { path: '/register', component: Register }];
 
 var router = new __WEBPACK_IMPORTED_MODULE_0_vue_router__["a" /* default */]({
   mode: 'history',
@@ -23039,6 +23042,9 @@ var router = new __WEBPACK_IMPORTED_MODULE_0_vue_router__["a" /* default */]({
 });
 
 var app = new Vue({
+  data: {
+    s: window.s
+  },
   el: '#app',
   router: router
 });
@@ -69800,18 +69806,39 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var _typeof="fun
 
 /***/ }),
 /* 221 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var MyInit = function MyInit() {
+  _classCallCheck(this, MyInit);
+
+  //console.log("FROM CONSTRUCTOR: " + JSON.stringify(s)) ;
+  axios.post('/problem/index').then(function (response) {
+    s.problems = response.data;
+  }).catch(function (error) {
+    console.log("FROM problem/index : " + error);
+  });
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (MyInit);
+
+/***/ }),
+/* 222 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(222)
+  __webpack_require__(223)
 }
-var normalizeComponent = __webpack_require__(8)
+var normalizeComponent = __webpack_require__(7)
 /* script */
-var __vue_script__ = __webpack_require__(225)
+var __vue_script__ = __webpack_require__(226)
 /* template */
-var __vue_template__ = __webpack_require__(226)
+var __vue_template__ = __webpack_require__(227)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -69850,17 +69877,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 222 */
+/* 223 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(223);
+var content = __webpack_require__(224);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(7)("3320c38b", content, false, {});
+var update = __webpack_require__(8)("3320c38b", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -69876,7 +69903,7 @@ if(false) {
 }
 
 /***/ }),
-/* 223 */
+/* 224 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -69884,13 +69911,13 @@ exports = module.exports = __webpack_require__(4)(false);
 
 
 // module
-exports.push([module.i, "\n.my-card-header[data-v-c2a22ebc] {\n  padding: 1px;\n  font-weight: bold;\n}\n.mynav[data-v-c2a22ebc] {\n  background-color: #ddd;\n  padding: 0;\n}\n.mybrand[data-v-c2a22ebc] {\n  padding: 0;\n}\n.my-logo-text[data-v-c2a22ebc] {\n  padding-left: 55px;\n  font-weight: bold;\n}\n.mylogo[data-v-c2a22ebc] {\n  position: absolute;\n  padding: 0;\n  z-index: 1;\n  left: 0px;\n  top: 0px;\n  height: 55px;\n}\n", ""]);
+exports.push([module.i, "\n.mynav[data-v-c2a22ebc] {\n  background-color: #ddd;\n  padding: 0;\n}\n.mybrand[data-v-c2a22ebc] {\n  padding: 0;\n}\n.my-logo-text[data-v-c2a22ebc] {\n  padding-left: 55px;\n  font-weight: bold;\n}\n.mylogo[data-v-c2a22ebc] {\n  position: absolute;\n  padding: 0;\n  z-index: 1;\n  left: 0px;\n  top: 0px;\n  height: 55px;\n}\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 224 */
+/* 225 */
 /***/ (function(module, exports) {
 
 /**
@@ -69923,7 +69950,7 @@ module.exports = function listToStyles (parentId, list) {
 
 
 /***/ }),
-/* 225 */
+/* 226 */
 /***/ (function(module, exports) {
 
 //
@@ -69944,7 +69971,7 @@ module.exports = function listToStyles (parentId, list) {
 
 module.exports = {
   mounted: function mounted() {
-    console.log("Высота меню: " + this.$refs.menuRef.clientHeight);
+    //console.log("Высота меню: " + this.$refs.menuRef.clientHeight);
     this.$bus.$emit("menu-height", this.$refs.menuRef.clientHeight);
   },
 
@@ -69968,7 +69995,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 226 */
+/* 227 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -70050,19 +70077,19 @@ if (false) {
 }
 
 /***/ }),
-/* 227 */
+/* 228 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(228)
+  __webpack_require__(229)
 }
-var normalizeComponent = __webpack_require__(8)
+var normalizeComponent = __webpack_require__(7)
 /* script */
-var __vue_script__ = __webpack_require__(230)
+var __vue_script__ = __webpack_require__(231)
 /* template */
-var __vue_template__ = __webpack_require__(231)
+var __vue_template__ = __webpack_require__(232)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -70101,17 +70128,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 228 */
+/* 229 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(229);
+var content = __webpack_require__(230);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(7)("7b3133ae", content, false, {});
+var update = __webpack_require__(8)("7b3133ae", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -70127,7 +70154,7 @@ if(false) {
 }
 
 /***/ }),
-/* 229 */
+/* 230 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -70135,13 +70162,13 @@ exports = module.exports = __webpack_require__(4)(false);
 
 
 // module
-exports.push([module.i, "\n.my-card-header[data-v-197c456e] {\n  padding: 1px;\n  font-weight: bold;\n}\n.submenu[data-v-197c456e] {\n  background-color: #ddd;\n}\n.mymenuitem[data-v-197c456e] {\n  color: #444;\n}\n.mymenutext[data-v-197c456e] {\n  font-family: Tahoma;\n  font-weight: bold;\n  padding-left: 2px;\n}\nli[data-v-197c456e]:hover {\n  border-bottom: 2px solid;\n}\n", ""]);
+exports.push([module.i, "\n.submenu[data-v-197c456e] {\n  background-color: #ddd;\n}\n.mymenuitem[data-v-197c456e] {\n  color: #444;\n}\n.mymenutext[data-v-197c456e] {\n  font-family: Tahoma;\n  font-weight: bold;\n  padding-left: 2px;\n}\nli[data-v-197c456e]:hover {\n  border-bottom: 2px solid;\n}\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 230 */
+/* 231 */
 /***/ (function(module, exports) {
 
 //
@@ -70166,7 +70193,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 231 */
+/* 232 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -70248,19 +70275,19 @@ if (false) {
 }
 
 /***/ }),
-/* 232 */
+/* 233 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(233)
+  __webpack_require__(234)
 }
-var normalizeComponent = __webpack_require__(8)
+var normalizeComponent = __webpack_require__(7)
 /* script */
-var __vue_script__ = __webpack_require__(235)
+var __vue_script__ = __webpack_require__(236)
 /* template */
-var __vue_template__ = __webpack_require__(236)
+var __vue_template__ = __webpack_require__(237)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -70299,17 +70326,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 233 */
+/* 234 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(234);
+var content = __webpack_require__(235);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(7)("8f7d4040", content, false, {});
+var update = __webpack_require__(8)("8f7d4040", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -70325,7 +70352,7 @@ if(false) {
 }
 
 /***/ }),
-/* 234 */
+/* 235 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -70339,7 +70366,7 @@ exports.push([module.i, "\n.tmp[data-v-73eab2f4] {\n  text-align: center ;\n}\n"
 
 
 /***/ }),
-/* 235 */
+/* 236 */
 /***/ (function(module, exports) {
 
 //
@@ -70374,14 +70401,14 @@ module.exports = {
   computed: {
     contentStyle: function contentStyle() {
       var style = { paddingTop: this.menuHeight + 2 + "px", paddingBottom: this.statusHeight + 2 + "px" };
-      console.log('STYLE: ' + JSON.stringify(style));
+      //console.log('STYLE: ' + JSON.stringify(style)) ;
       return style;
     }
   }
 };
 
 /***/ }),
-/* 236 */
+/* 237 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -70408,19 +70435,19 @@ if (false) {
 }
 
 /***/ }),
-/* 237 */
+/* 238 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(238)
+  __webpack_require__(239)
 }
-var normalizeComponent = __webpack_require__(8)
+var normalizeComponent = __webpack_require__(7)
 /* script */
-var __vue_script__ = __webpack_require__(240)
+var __vue_script__ = __webpack_require__(241)
 /* template */
-var __vue_template__ = __webpack_require__(241)
+var __vue_template__ = __webpack_require__(242)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -70459,17 +70486,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 238 */
+/* 239 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(239);
+var content = __webpack_require__(240);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(7)("02e9faaa", content, false, {});
+var update = __webpack_require__(8)("02e9faaa", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -70485,7 +70512,7 @@ if(false) {
 }
 
 /***/ }),
-/* 239 */
+/* 240 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -70493,13 +70520,13 @@ exports = module.exports = __webpack_require__(4)(false);
 
 
 // module
-exports.push([module.i, "\n.my-card-header[data-v-79cd63cc] {\n  padding: 1px;\n  font-weight: bold;\n}\n.myfooter[data-v-79cd63cc] {\n  position: fixed;\n  bottom: 0;\n  padding: 0;\n  width: 100%;\n  background-color: #ddd;\n  font-family: Tahoma;\n  font-weight: bold;\n}\n.copyright[data-v-79cd63cc] {\n  padding-right: 5px;\n  text-align: right;\n}\n", ""]);
+exports.push([module.i, "\n.myfooter[data-v-79cd63cc] {\n  position: fixed;\n  bottom: 0;\n  padding: 0;\n  width: 100%;\n  background-color: #ddd;\n  font-family: Tahoma;\n  font-weight: bold;\n}\n.copyright[data-v-79cd63cc] {\n  padding-right: 5px;\n  text-align: right;\n}\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 240 */
+/* 241 */
 /***/ (function(module, exports) {
 
 //
@@ -70510,7 +70537,7 @@ exports.push([module.i, "\n.my-card-header[data-v-79cd63cc] {\n  padding: 1px;\n
 
 module.exports = {
   mounted: function mounted() {
-    console.log('Status bar mounted...' + this.Year);
+    //console.log('Status bar mounted...'+this.Year) ;
     this.$bus.$emit('status-height', this.$refs.statusRef.clientHeight);
   },
 
@@ -70524,7 +70551,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 241 */
+/* 242 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -70548,19 +70575,19 @@ if (false) {
 }
 
 /***/ }),
-/* 242 */
+/* 243 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(243)
+  __webpack_require__(244)
 }
-var normalizeComponent = __webpack_require__(8)
+var normalizeComponent = __webpack_require__(7)
 /* script */
-var __vue_script__ = __webpack_require__(245)
+var __vue_script__ = __webpack_require__(246)
 /* template */
-var __vue_template__ = __webpack_require__(246)
+var __vue_template__ = __webpack_require__(247)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -70599,17 +70626,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 243 */
+/* 244 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(244);
+var content = __webpack_require__(245);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(7)("447a94f8", content, false, {});
+var update = __webpack_require__(8)("447a94f8", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -70625,7 +70652,7 @@ if(false) {
 }
 
 /***/ }),
-/* 244 */
+/* 245 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -70639,7 +70666,7 @@ exports.push([module.i, "\n.tmp[data-v-6707e3d4] {\n  text-align: center ;\n}\n"
 
 
 /***/ }),
-/* 245 */
+/* 246 */
 /***/ (function(module, exports) {
 
 //
@@ -70656,7 +70683,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 246 */
+/* 247 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -70678,19 +70705,19 @@ if (false) {
 }
 
 /***/ }),
-/* 247 */
+/* 248 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(248)
+  __webpack_require__(249)
 }
-var normalizeComponent = __webpack_require__(8)
+var normalizeComponent = __webpack_require__(7)
 /* script */
-var __vue_script__ = __webpack_require__(250)
+var __vue_script__ = __webpack_require__(251)
 /* template */
-var __vue_template__ = __webpack_require__(251)
+var __vue_template__ = __webpack_require__(252)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -70729,17 +70756,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 248 */
+/* 249 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(249);
+var content = __webpack_require__(250);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(7)("2b435b89", content, false, {});
+var update = __webpack_require__(8)("2b435b89", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -70755,7 +70782,7 @@ if(false) {
 }
 
 /***/ }),
-/* 249 */
+/* 250 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -70763,15 +70790,347 @@ exports = module.exports = __webpack_require__(4)(false);
 
 
 // module
-exports.push([module.i, "\n.my-card-header[data-v-26bc8364] {\n  padding: 1px;\n  font-weight: bold;\n}\n.my-title-link[data-v-26bc8364] {\n  color: #777;\n}\n.my-title-link-text[data-v-26bc8364] {\n  font-family: Tahoma;\n  font-weight: bold;\n}\n.my-title-name[data-v-26bc8364] {\n  padding: 2px;\n  font-family: Tahoma;\n  font-weight: bold;\n  font-size: 120%;\n}\n.my-subtitle[data-v-26bc8364] {\n  font-family: Tahoma;\n  font-weight: bold;\n}\n.my-label[data-v-26bc8364] {\n  font-family: Tahoma;\n}\n.my-b-card[data-v-26bc8364] {\n  width: 100%;\n}\n", ""]);
+exports.push([module.i, "", ""]);
 
 // exports
 
 
 /***/ }),
-/* 250 */
+/* 251 */
 /***/ (function(module, exports) {
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+module.exports = {
+  mounted: function mounted() {
+    //console.log("TEST: " + JSON.stringify(window.s.problems)) ;
+  },
+
+  data: function data() {
+    return {
+      s: window.s,
+      mathjaxSrc: "$$\\int_a^b\\limits f(x) dx$$\n\n",
+      formData: {
+        uname: "gauss_eqn",
+        name: "исследование СЛУ методом Гаусса",
+        template: "Исследовать СЛУ: $$ [[A]] $$",
+        ans_template: "главные неизвестные: $ [[main_vect]] $\nтип: [[system_type]] ...",
+        ans_form: '[{"id":"step","label":"Ступенчатый вид","type":"textarea", "small":"кол-во пробелов не важно"}]'
+      }
+    };
+  },
+  methods: {
+    problemShow: function problemShow(id) {
+      this.$router.push("/problem/show/" + id);
+    },
+    render: function render(event) {
+      //console.log("render executed..."+this.$refs.rendered.innerHTML) ;
+      //console.log((window.MathJax) ? "MJ initialized" : "NO") ;
+      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, this.$refs.rendered]);
+    },
+    submit: function submit() {
+      //console.log(JSON.stringify(this.formData)) ;
+      this.axios.post('/edit/problem/add', this.formData, { headers: { "Cache-Control": "no-cache" } }).then(function (response) {
+        console.log("RESPONSE_DATA: " + JSON.stringify(response.data));
+        switch (response.data.status) {
+          case "ok":
+            console.log("OK");
+            break;
+          case "error":
+            console.log("ERROR");
+            break;
+        }
+      }).catch(function (error) {
+        console.log(error);
+      });
+    }
+  }
+};
+
+/***/ }),
+/* 252 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    [
+      _c(
+        "b-card",
+        [
+          _c("span", { staticClass: "my-title-name" }, [
+            _vm._v("Редактор задач")
+          ]),
+          _c(
+            "b-tabs",
+            { attrs: { card: "card", vertical: "vertical" } },
+            [
+              _c(
+                "b-tab",
+                { attrs: { active: "active" } },
+                [
+                  _c("template", { slot: "title" }, [
+                    _c("i", { staticClass: "fa fa-list-ul my-title-link" }, [
+                      _c("span", { staticClass: "my-title-link-text" }, [
+                        _vm._v(" Список")
+                      ])
+                    ])
+                  ]),
+                  _c("div", { staticClass: "my-subtitle" }, [
+                    _vm._v("Список задач"),
+                    _c(
+                      "div",
+                      { staticClass: "b-list-group" },
+                      _vm._l(_vm.s.problems, function(item, index) {
+                        return _vm.s.problems.length > 0
+                          ? _c(
+                              "b-list-group-item",
+                              {
+                                key: index,
+                                staticClass: "my-list-item",
+                                attrs: { button: "button", id: item.id },
+                                on: {
+                                  click: function($event) {
+                                    _vm.problemShow(index)
+                                  }
+                                }
+                              },
+                              [_vm._v(_vm._s(item.name))]
+                            )
+                          : _c(
+                              "b-list-group-item",
+                              { staticClass: "my-list-item" },
+                              [
+                                _vm._v("Ждем данных"),
+                                _c("span", {
+                                  staticClass: "fa fa-refresh fa-spin"
+                                })
+                              ]
+                            )
+                      })
+                    )
+                  ])
+                ],
+                2
+              ),
+              _c(
+                "b-tab",
+                { attrs: { title: "Добавить" } },
+                [
+                  _c("template", { slot: "title" }, [
+                    _c(
+                      "i",
+                      { staticClass: "fa fa-plus-square-o my-title-link" },
+                      [
+                        _c("span", { staticClass: "my-title-link-text" }, [
+                          _vm._v(" Добавить")
+                        ])
+                      ]
+                    )
+                  ]),
+                  _c("edit-problem-add")
+                ],
+                2
+              ),
+              _c(
+                "b-tab",
+                { attrs: { title: "Изменить" } },
+                [
+                  _c("template", { slot: "title" }, [
+                    _c("i", { staticClass: "fa fa-pencil my-title-link" }, [
+                      _c("span", { staticClass: "my-title-link-text" }, [
+                        _vm._v(" Изменить")
+                      ])
+                    ])
+                  ]),
+                  _c("div", [_vm._v("Выберите задачу из списка ...")]),
+                  _c("textarea", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.mathjaxSrc,
+                        expression: "mathjaxSrc"
+                      }
+                    ],
+                    attrs: { rows: "5", cols: "50", label: "mathjaxTest" },
+                    domProps: { value: _vm.mathjaxSrc },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.mathjaxSrc = $event.target.value
+                      }
+                    }
+                  }),
+                  _c(
+                    "button",
+                    {
+                      attrs: { type: "button", label: "отобразить" },
+                      on: { click: this.render }
+                    },
+                    [_vm._v("Отобразить")]
+                  ),
+                  _c("div", {
+                    ref: "rendered",
+                    domProps: { innerHTML: _vm._s(_vm.mathjaxSrc) }
+                  })
+                ],
+                2
+              )
+            ],
+            1
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-26bc8364", module.exports)
+  }
+}
+
+/***/ }),
+/* 253 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(254)
+}
+var normalizeComponent = __webpack_require__(7)
+/* script */
+var __vue_script__ = __webpack_require__(256)
+/* template */
+var __vue_template__ = __webpack_require__(257)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-30cd49ba"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/EditProblemAdd.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-30cd49ba", Component.options)
+  } else {
+    hotAPI.reload("data-v-30cd49ba", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 254 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(255);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(8)("759af63b", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-30cd49ba\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/sass-loader/lib/loader.js!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./EditProblemAdd.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-30cd49ba\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/sass-loader/lib/loader.js!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./EditProblemAdd.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 255 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(4)(false);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 256 */
+/***/ (function(module, exports) {
+
+//
+//
+//
+//
 //
 //
 //
@@ -70823,258 +71182,338 @@ exports.push([module.i, "\n.my-card-header[data-v-26bc8364] {\n  padding: 1px;\n
 
 module.exports = {
   mounted: function mounted() {
-    console.log('Problem editor mounted...');
+    //console.log('ProblemEditorAdd mounted...')
   },
 
   data: function data() {
     return {
-      mathjaxSrc: "$$\\int_a^b\\limits f(x) dx$$\n\n"
+      formData: { uname: "", name: "", template: "", ans_template: "", ans_form: "" }
     };
   },
   methods: {
-    render: function render(event) {
-      //console.log("render executed..."+this.$refs.rendered.innerHTML) ;
-      //console.log((window.MathJax) ? "MJ initialized" : "NO") ;
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, this.$refs.rendered]);
+    example: function example() {
+      console.log("running example...");
+      this.formData = {
+        uname: "gauss_eqn",
+        name: "исследование СЛУ методом Гаусса",
+        template: "Исследовать СЛУ: $$ [[A]] $$",
+        ans_template: "главные неизвестные: $ [[main_vect]] $\nтип: [[system_type]] ...",
+        ans_form: '[{"id":"step","label":"Ступенчатый вид","type":"textarea", "small":"кол-во пробелов не важно"}]'
+      };
+    },
+    submit: function submit() {
+      //console.log(JSON.stringify(this.formData)) ;
+      this.axios.post('/edit/problem/add', this.formData, { headers: { "Cache-Control": "no-cache" } }).then(function (response) {
+        console.log("RESPONSE_DATA: " + JSON.stringify(response.data));
+        switch (response.data.status) {
+          case "ok":
+            console.log("OK");
+            break;
+          case "error":
+            console.log("ERROR");
+            break;
+        }
+      }).catch(function (error) {
+        console.log(error);
+      });
     }
   }
 };
 
 /***/ }),
-/* 251 */
+/* 257 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "w-100" },
-    [
-      _c(
-        "b-card",
-        { staticClass: "my-b-card w-100", attrs: { "no-body": "no-body" } },
-        [
-          _c("span", { staticClass: "my-title-name" }, [
-            _vm._v("Редактор задач")
-          ]),
-          _c(
-            "b-tabs",
-            { attrs: { card: "card", vertical: "vertical" } },
-            [
-              _c(
-                "b-tab",
-                { attrs: { active: "active" } },
-                [
-                  _c("template", { slot: "title" }, [
-                    _c("i", { staticClass: "fa fa-list-ul my-title-link" }, [
-                      _c("span", { staticClass: "my-title-link-text" }, [
-                        _vm._v(" Список")
-                      ])
+  return _c("div", { staticClass: "my-subtitle" }, [
+    _vm._v("Добавление задачи"),
+    _c("form", { ref: "addProb" }, [
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col-md-6" }, [
+          _c("div", { staticClass: "form-group" }, [
+            _c("label", { staticClass: "my-label", attrs: { for: "uname" } }, [
+              _vm._v("Краткое имя:")
+            ]),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.formData.uname,
+                  expression: "formData.uname"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: {
+                id: "uname",
+                type: "text",
+                placeholder: "например: example_problem2"
+              },
+              domProps: { value: _vm.formData.uname },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.formData, "uname", $event.target.value)
+                }
+              }
+            }),
+            _c(
+              "small",
+              {
+                staticClass: "form-text text-muted",
+                attrs: { pattern: "[a-z_0-9]" }
+              },
+              [
+                _vm._v(
+                  "Уникальный идентификатор, допустимые символы: [a-z_0-9]"
+                )
+              ]
+            )
+          ])
+        ]),
+        _c("div", { staticClass: "col-md-6" }, [
+          _c("div", { staticClass: "from-group" }, [
+            _c("label", { staticClass: "my-label", attrs: { for: "name" } }, [
+              _vm._v("Название:")
+            ]),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.formData.name,
+                  expression: "formData.name"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: {
+                id: "name",
+                type: "text",
+                placeholder: "например: Решение системы линейных"
+              },
+              domProps: { value: _vm.formData.name },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.formData, "name", $event.target.value)
+                }
+              }
+            }),
+            _c("small", { staticClass: "form-text text-muted" }, [
+              _vm._v("Полное название задачи")
+            ])
+          ])
+        ])
+      ]),
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col-md-6" }, [
+          _c("div", { staticClass: "form-group" }, [
+            _c(
+              "label",
+              { staticClass: "my-label", attrs: { for: "template" } },
+              [_vm._v("Шаблон условия:")]
+            ),
+            _c("textarea", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.formData.template,
+                  expression: "formData.template"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: {
+                id: "template",
+                rows: "4",
+                placeholder: "Решить систему уравнений:\n $$ [[System]] $$"
+              },
+              domProps: { value: _vm.formData.template },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.formData, "template", $event.target.value)
+                }
+              }
+            }),
+            _c("small", { staticClass: "form-text text-muted" }, [
+              _vm._v("Шаблон условия задачи: [[x]] для переменной x ")
+            ])
+          ])
+        ]),
+        _c("div", { staticClass: "col-md-6" }, [
+          _c("div", { staticClass: "form-group" }, [
+            _c(
+              "label",
+              { staticClass: "my-label", attrs: { for: "ans_template" } },
+              [_vm._v("Шаблон ответа:")]
+            ),
+            _c("textarea", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.formData.ans_template,
+                  expression: "formData.ans_template"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: {
+                id: "ans_template",
+                rows: "4",
+                placeholder: "Решение системы: $ [[ans_vector]] $"
+              },
+              domProps: { value: _vm.formData.ans_template },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.formData, "ans_template", $event.target.value)
+                }
+              }
+            }),
+            _c("small", { staticClass: "form-text text-muted" }, [
+              _vm._v("Шаблон ответа задачи: [[x]] для переменной x ")
+            ])
+          ])
+        ])
+      ]),
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col-md-6" }, [
+          _c("div", { staticClass: "form-group" }, [
+            _c(
+              "label",
+              { staticClass: "my-label", attrs: { for: "ans_form" } },
+              [_vm._v("Форма ответа:")]
+            ),
+            _c("textarea", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.formData.ans_form,
+                  expression: "formData.ans_form"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: {
+                id: "ans_form",
+                rows: "4",
+                placeholder:
+                  '[{id:"step",label:"Ступенчатый вид",type:"textarea", small:"кол-во пробелов не важно"},{...}]'
+              },
+              domProps: { value: _vm.formData.ans_form },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.formData, "ans_form", $event.target.value)
+                }
+              }
+            }),
+            _c("small", { staticClass: "form-text text-muted" }, [
+              _vm._v("Поля формы ответа в формате JSON")
+            ])
+          ])
+        ]),
+        _c("div", { staticClass: "col-md-6" }, [
+          _c("div", { staticClass: "row" }, [
+            _c("div", { staticClass: "col-md-4" }, [
+              _c("div", { staticClass: "form-group" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass:
+                      "btn btn-primary my-button fa fa-plus-square-o",
+                    attrs: { type: "button" },
+                    on: { click: _vm.submit }
+                  },
+                  [
+                    _c("span", { staticClass: "my-button-text" }, [
+                      _vm._v("  Добавить")
                     ])
-                  ]),
-                  _c("div", { staticClass: "my-subtitle" }, [
-                    _vm._v("Список задач")
-                  ]),
-                  _c("textarea", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.mathjaxSrc,
-                        expression: "mathjaxSrc"
-                      }
-                    ],
-                    attrs: { rows: "5", cols: "50", label: "mathjaxTest" },
-                    domProps: { value: _vm.mathjaxSrc },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.mathjaxSrc = $event.target.value
-                      }
-                    }
-                  }),
-                  _c(
-                    "button",
-                    {
-                      attrs: { type: "button", label: "отобразить" },
-                      on: { click: this.render }
-                    },
-                    [_vm._v("Отобразить")]
-                  ),
-                  _c("div", {
-                    ref: "rendered",
-                    domProps: { innerHTML: _vm._s(_vm.mathjaxSrc) }
-                  })
-                ],
-                2
-              ),
-              _c(
-                "b-tab",
-                { attrs: { title: "Добавить" } },
-                [
-                  _c("template", { slot: "title" }, [
-                    _c(
-                      "i",
-                      { staticClass: "fa fa-plus-square-o my-title-link" },
-                      [
-                        _c("span", { staticClass: "my-title-link-text" }, [
-                          _vm._v(" Добавить")
-                        ])
-                      ]
-                    )
-                  ]),
-                  _c("div", { staticClass: "my-subtitle" }, [
-                    _vm._v("Добавление задачи")
-                  ]),
-                  _c("form", [
-                    _c("div", { staticClass: "form-group" }, [
-                      _c(
-                        "label",
-                        { staticClass: "my-label", attrs: { for: "uname" } },
-                        [_vm._v("Краткое имя:")]
-                      ),
-                      _c("input", {
-                        staticClass: "form-control",
-                        attrs: {
-                          id: "uname",
-                          type: "text",
-                          placeholder: "например: example_problem2"
-                        }
-                      }),
-                      _c(
-                        "small",
-                        {
-                          staticClass: "form-text text-muted",
-                          attrs: { pattern: "[a-z_0-9]" }
-                        },
-                        [
-                          _vm._v(
-                            "Уникальный идентификатор, допустимые символы: [a-z_0-9]"
-                          )
-                        ]
-                      )
-                    ]),
-                    _c("div", { staticClass: "from-group" }, [
-                      _c(
-                        "label",
-                        { staticClass: "my-label", attrs: { for: "name" } },
-                        [_vm._v("Название:")]
-                      ),
-                      _c("input", {
-                        staticClass: "form-control",
-                        attrs: {
-                          id: "name",
-                          type: "text",
-                          placeholder:
-                            "например: Вычисление несобственного интеграла"
-                        }
-                      }),
-                      _c("small", { staticClass: "form-text text-muted" }, [
-                        _vm._v("Полное название задачи")
-                      ])
-                    ]),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c(
-                        "label",
-                        { staticClass: "my-label", attrs: { for: "template" } },
-                        [_vm._v("Шаблон условия:")]
-                      ),
-                      _c("textarea", {
-                        staticClass: "form-control",
-                        attrs: { id: "template" }
-                      }),
-                      _c("small", { staticClass: "form-text text-muted" }, [
-                        _vm._v("Шаблон условия задачи: [[x]] для переменной x ")
-                      ])
-                    ]),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c(
-                        "label",
-                        {
-                          staticClass: "my-label",
-                          attrs: { for: "ans_template" }
-                        },
-                        [_vm._v("Шаблон ответа:")]
-                      ),
-                      _c("textarea", {
-                        staticClass: "form-control",
-                        attrs: { id: "ans_template" }
-                      }),
-                      _c("small", { staticClass: "form-text text-muted" }, [
-                        _vm._v("Шаблон ответа задачи: [[x]] для переменной x ")
-                      ])
-                    ]),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c(
-                        "label",
-                        { staticClass: "my-label", attrs: { for: "ans_form" } },
-                        [_vm._v("Форма ответа:")]
-                      ),
-                      _c("textarea", {
-                        staticClass: "form-control",
-                        attrs: { id: "ans_form" }
-                      }),
-                      _c("small", { staticClass: "form-text text-muted" }, [
-                        _vm._v("Поля формы ответа в формате JSON")
-                      ])
+                  ]
+                )
+              ])
+            ]),
+            _c("div", { staticClass: "col-md-4" }, [
+              _c("div", { staticClass: "form-group" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-light fa fa-qustion",
+                    attrs: { type: "button" },
+                    on: { click: _vm.example }
+                  },
+                  [
+                    _c("span", { staticClass: "my-button-text" }, [
+                      _vm._v("?   Пример")
                     ])
-                  ])
-                ],
-                2
-              ),
-              _c(
-                "b-tab",
-                { attrs: { title: "Изменить" } },
-                [
-                  _c("template", { slot: "title" }, [
-                    _c("i", { staticClass: "fa fa-pencil my-title-link" }, [
-                      _c("span", { staticClass: "my-title-link-text" }, [
-                        _vm._v(" Изменить")
-                      ])
-                    ])
-                  ]),
-                  _c("div", [_vm._v("Выберите задачу из списка ...")])
-                ],
-                2
-              )
-            ],
-            1
-          )
-        ],
-        1
-      )
-    ],
-    1
-  )
+                  ]
+                )
+              ])
+            ]),
+            _vm._m(0)
+          ])
+        ])
+      ])
+    ])
+  ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-md-4" }, [
+      _c("div", { staticClass: "form-group" }, [
+        _c(
+          "button",
+          { staticClass: "btn btn-light", attrs: { type: "reset" } },
+          [
+            _c("span", { staticClass: "my-button-text" }, [
+              _vm._v("×  Очистить")
+            ])
+          ]
+        )
+      ])
+    ])
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-26bc8364", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-30cd49ba", module.exports)
   }
 }
 
 /***/ }),
-/* 252 */
+/* 258 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(253)
+  __webpack_require__(259)
 }
-var normalizeComponent = __webpack_require__(8)
+var normalizeComponent = __webpack_require__(7)
 /* script */
-var __vue_script__ = __webpack_require__(255)
+var __vue_script__ = __webpack_require__(261)
 /* template */
-var __vue_template__ = __webpack_require__(256)
+var __vue_template__ = __webpack_require__(262)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -71113,17 +71552,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 253 */
+/* 259 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(254);
+var content = __webpack_require__(260);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(7)("3a03477f", content, false, {});
+var update = __webpack_require__(8)("3a03477f", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -71139,7 +71578,7 @@ if(false) {
 }
 
 /***/ }),
-/* 254 */
+/* 260 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -71153,7 +71592,7 @@ exports.push([module.i, "\n.tmp[data-v-3c924cf3] {\n  text-align: center ;\n}\n"
 
 
 /***/ }),
-/* 255 */
+/* 261 */
 /***/ (function(module, exports) {
 
 //
@@ -71170,7 +71609,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 256 */
+/* 262 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -71190,19 +71629,19 @@ if (false) {
 }
 
 /***/ }),
-/* 257 */
+/* 263 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(258)
+  __webpack_require__(264)
 }
-var normalizeComponent = __webpack_require__(8)
+var normalizeComponent = __webpack_require__(7)
 /* script */
-var __vue_script__ = __webpack_require__(260)
+var __vue_script__ = __webpack_require__(266)
 /* template */
-var __vue_template__ = __webpack_require__(261)
+var __vue_template__ = __webpack_require__(267)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -71241,17 +71680,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 258 */
+/* 264 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(259);
+var content = __webpack_require__(265);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(7)("a2d24fd4", content, false, {});
+var update = __webpack_require__(8)("a2d24fd4", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -71267,7 +71706,7 @@ if(false) {
 }
 
 /***/ }),
-/* 259 */
+/* 265 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -71281,7 +71720,7 @@ exports.push([module.i, "\n.tmp[data-v-497734f4] {\n  text-align: center ;\n}\n"
 
 
 /***/ }),
-/* 260 */
+/* 266 */
 /***/ (function(module, exports) {
 
 //
@@ -71298,7 +71737,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 261 */
+/* 267 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -71318,19 +71757,19 @@ if (false) {
 }
 
 /***/ }),
-/* 262 */
+/* 268 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(263)
+  __webpack_require__(269)
 }
-var normalizeComponent = __webpack_require__(8)
+var normalizeComponent = __webpack_require__(7)
 /* script */
-var __vue_script__ = __webpack_require__(265)
+var __vue_script__ = __webpack_require__(271)
 /* template */
-var __vue_template__ = __webpack_require__(266)
+var __vue_template__ = __webpack_require__(272)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -71369,17 +71808,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 263 */
+/* 269 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(264);
+var content = __webpack_require__(270);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(7)("4423a6d6", content, false, {});
+var update = __webpack_require__(8)("4423a6d6", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -71395,7 +71834,7 @@ if(false) {
 }
 
 /***/ }),
-/* 264 */
+/* 270 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -71409,7 +71848,7 @@ exports.push([module.i, "\n.tmp[data-v-3f8a7738]{\n  text-align: center ;\n}\n",
 
 
 /***/ }),
-/* 265 */
+/* 271 */
 /***/ (function(module, exports) {
 
 //
@@ -71426,7 +71865,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 266 */
+/* 272 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -71446,19 +71885,117 @@ if (false) {
 }
 
 /***/ }),
-/* 267 */
+/* 273 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(7)
+/* script */
+var __vue_script__ = __webpack_require__(274)
+/* template */
+var __vue_template__ = __webpack_require__(275)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/ProblemShow.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-10579fd5", Component.options)
+  } else {
+    hotAPI.reload("data-v-10579fd5", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 274 */
+/***/ (function(module, exports) {
+
+//
+//
+//
+//
+//
+//
+//
+
+module.exports = {
+  mounted: function mounted() {},
+
+  data: function data() {
+    return {
+      s: window.s,
+      id: this.$route.params.id
+    };
+  },
+  methods: {}
+};
+
+/***/ }),
+/* 275 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "container" }, [
+    typeof _vm.s.problems[_vm.id] !== "undefined"
+      ? _c("h2", [_vm._v(_vm._s(_vm.s.problems[_vm.id].name))])
+      : _c("h2", [
+          _vm._v("Ждем данных "),
+          _c("span", { staticClass: "fa fa-refresh fa-spin" })
+        ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-10579fd5", module.exports)
+  }
+}
+
+/***/ }),
+/* 276 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(268)
+  __webpack_require__(277)
 }
-var normalizeComponent = __webpack_require__(8)
+var normalizeComponent = __webpack_require__(7)
 /* script */
-var __vue_script__ = __webpack_require__(270)
+var __vue_script__ = __webpack_require__(279)
 /* template */
-var __vue_template__ = __webpack_require__(271)
+var __vue_template__ = __webpack_require__(280)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -71497,17 +72034,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 268 */
+/* 277 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(269);
+var content = __webpack_require__(278);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(7)("30611899", content, false, {});
+var update = __webpack_require__(8)("30611899", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -71523,7 +72060,7 @@ if(false) {
 }
 
 /***/ }),
-/* 269 */
+/* 278 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -71537,7 +72074,7 @@ exports.push([module.i, "\n.tmp[data-v-b5c7676e] {\n  text-align: center ;\n}\n"
 
 
 /***/ }),
-/* 270 */
+/* 279 */
 /***/ (function(module, exports) {
 
 //
@@ -71554,7 +72091,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 271 */
+/* 280 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -71574,19 +72111,19 @@ if (false) {
 }
 
 /***/ }),
-/* 272 */
+/* 281 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(273)
+  __webpack_require__(282)
 }
-var normalizeComponent = __webpack_require__(8)
+var normalizeComponent = __webpack_require__(7)
 /* script */
-var __vue_script__ = __webpack_require__(275)
+var __vue_script__ = __webpack_require__(284)
 /* template */
-var __vue_template__ = __webpack_require__(276)
+var __vue_template__ = __webpack_require__(285)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -71625,17 +72162,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 273 */
+/* 282 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(274);
+var content = __webpack_require__(283);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(7)("6121907a", content, false, {});
+var update = __webpack_require__(8)("6121907a", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -71651,7 +72188,7 @@ if(false) {
 }
 
 /***/ }),
-/* 274 */
+/* 283 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -71665,7 +72202,7 @@ exports.push([module.i, "\n.tmp[data-v-494be75c] {\n  text-align: center ;\n}\n"
 
 
 /***/ }),
-/* 275 */
+/* 284 */
 /***/ (function(module, exports) {
 
 //
@@ -71682,7 +72219,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 276 */
+/* 285 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -71702,19 +72239,19 @@ if (false) {
 }
 
 /***/ }),
-/* 277 */
+/* 286 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(278)
+  __webpack_require__(287)
 }
-var normalizeComponent = __webpack_require__(8)
+var normalizeComponent = __webpack_require__(7)
 /* script */
-var __vue_script__ = __webpack_require__(280)
+var __vue_script__ = __webpack_require__(289)
 /* template */
-var __vue_template__ = __webpack_require__(281)
+var __vue_template__ = __webpack_require__(290)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -71753,17 +72290,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 278 */
+/* 287 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(279);
+var content = __webpack_require__(288);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(7)("e5b49058", content, false, {});
+var update = __webpack_require__(8)("e5b49058", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -71779,7 +72316,7 @@ if(false) {
 }
 
 /***/ }),
-/* 279 */
+/* 288 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -71793,7 +72330,7 @@ exports.push([module.i, "\n.tmp[data-v-68543510] {\n  text-align: center ;\n}\n"
 
 
 /***/ }),
-/* 280 */
+/* 289 */
 /***/ (function(module, exports) {
 
 //
@@ -71810,7 +72347,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 281 */
+/* 290 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -71830,19 +72367,19 @@ if (false) {
 }
 
 /***/ }),
-/* 282 */
+/* 291 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(283)
+  __webpack_require__(292)
 }
-var normalizeComponent = __webpack_require__(8)
+var normalizeComponent = __webpack_require__(7)
 /* script */
-var __vue_script__ = __webpack_require__(285)
+var __vue_script__ = __webpack_require__(294)
 /* template */
-var __vue_template__ = __webpack_require__(286)
+var __vue_template__ = __webpack_require__(295)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -71881,17 +72418,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 283 */
+/* 292 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(284);
+var content = __webpack_require__(293);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(7)("9ab92c90", content, false, {});
+var update = __webpack_require__(8)("9ab92c90", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -71907,7 +72444,7 @@ if(false) {
 }
 
 /***/ }),
-/* 284 */
+/* 293 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -71921,7 +72458,7 @@ exports.push([module.i, "\n.tmp[data-v-f88ac34c] {\n  text-align: center ;\n}\n"
 
 
 /***/ }),
-/* 285 */
+/* 294 */
 /***/ (function(module, exports) {
 
 //
@@ -71938,7 +72475,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 286 */
+/* 295 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -71958,19 +72495,19 @@ if (false) {
 }
 
 /***/ }),
-/* 287 */
+/* 296 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(288)
+  __webpack_require__(297)
 }
-var normalizeComponent = __webpack_require__(8)
+var normalizeComponent = __webpack_require__(7)
 /* script */
-var __vue_script__ = __webpack_require__(290)
+var __vue_script__ = __webpack_require__(299)
 /* template */
-var __vue_template__ = __webpack_require__(291)
+var __vue_template__ = __webpack_require__(300)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -72009,17 +72546,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 288 */
+/* 297 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(289);
+var content = __webpack_require__(298);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(7)("da7589da", content, false, {});
+var update = __webpack_require__(8)("da7589da", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -72035,7 +72572,7 @@ if(false) {
 }
 
 /***/ }),
-/* 289 */
+/* 298 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -72049,7 +72586,7 @@ exports.push([module.i, "\n.tmp[data-v-3e2ac97c] {\n  text-align: center ;\n}\n"
 
 
 /***/ }),
-/* 290 */
+/* 299 */
 /***/ (function(module, exports) {
 
 //
@@ -72066,7 +72603,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 291 */
+/* 300 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -72086,7 +72623,7 @@ if (false) {
 }
 
 /***/ }),
-/* 292 */
+/* 301 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

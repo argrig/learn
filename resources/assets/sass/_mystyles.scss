@@ -1,0 +1,44 @@
+.my-card-header {
+  padding: 1px ;
+  font-weight: bold ;
+}
+
+.my-title-link{
+  color: $fg-light ;
+}
+.my-title-link-text{
+  font-family: $title-font ;
+  font-weight: bold ;
+}
+.my-title-name{
+  padding: 2px;
+  font-family: $title-font ;
+  font-weight: bold ;
+  font-size: 130% ;
+}
+
+.my-subtitle{
+  font-family: $title-font ;
+  font-weight: bold ;
+  font-size: 120%
+}
+
+.my-label{
+  font-family: $title-font ;
+}
+
+.my-button{
+  background-color: $bg-dark ;
+  color: $fg-dark ;
+}
+.my-button-text{
+  font-family: $title-font ;
+  color: $fg-dark ;
+  font-weight: bold ;
+}
+
+.my-list-item{
+  font-family: $text-font ;
+  font-size: 100% ;
+  font-weight: normal ;
+}

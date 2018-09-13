@@ -13838,3 +13838,51 @@ a.text-dark:focus {
   }
 }
 
+.my-card-header {
+  padding: 1px;
+  font-weight: bold;
+}
+
+.my-title-link {
+  color: #777;
+}
+
+.my-title-link-text {
+  font-family: Tahoma;
+  font-weight: bold;
+}
+
+.my-title-name {
+  padding: 2px;
+  font-family: Tahoma;
+  font-weight: bold;
+  font-size: 130%;
+}
+
+.my-subtitle {
+  font-family: Tahoma;
+  font-weight: bold;
+  font-size: 120%;
+}
+
+.my-label {
+  font-family: Tahoma;
+}
+
+.my-button {
+  background-color: #ddd;
+  color: #444;
+}
+
+.my-button-text {
+  font-family: Tahoma;
+  color: #444;
+  font-weight: bold;
+}
+
+.my-list-item {
+  font-family: Verdana;
+  font-size: 100%;
+  font-weight: normal;
+}
+
