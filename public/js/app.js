@@ -23060,9 +23060,10 @@ window.MathJax.Hub.Config({
     processEscapes: true
   },
   skipStartupTypeset: true,
-  "HTML-CSS": { scale: 105 }
-  //TeX: { equationNumbers: { autoNumber: "AMS" } }
-});
+  "HTML-CSS": { scale: 120 },
+  NativeMML: { scale: 200
+    //TeX: { equationNumbers: { autoNumber: "AMS" } }
+  } });
 
 /***/ }),
 /* 80 */
@@ -72103,6 +72104,7 @@ var render = function() {
       ? _c("div", {
           ref: "pText",
           staticClass: "container",
+          staticStyle: { "font-size": "2em" },
           domProps: { innerHTML: _vm._s(this.pRender.A) },
           on: { change: this.jax, click: this.jax }
         })

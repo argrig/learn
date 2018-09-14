@@ -3,7 +3,7 @@
     h2(v-if="typeof(s.problems[id]) !== 'undefined'") {{s.problems[id].name}}
     h2(v-else) Ждем данных &nbsp;
       span.fa.fa-refresh.fa-spin
-    .container(ref="pText" v-if="this.pRender" v-html="this.pRender.A" @change="this.jax" @click="this.jax") 
+    .container(style="font-size:2em" ref="pText" v-if="this.pRender" v-html="this.pRender.A" @change="this.jax" @click="this.jax") 
     .container(v-else) Генерируем задачу &nbsp;
       span.fa.fa-refresh.fa-spin
 </template>

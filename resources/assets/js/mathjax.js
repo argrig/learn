@@ -4,7 +4,8 @@ window.MathJax.Hub.Config({
     processEscapes: true,
   },
   skipStartupTypeset: true,
-  "HTML-CSS":{scale:105},
+  "HTML-CSS": {scale:120},
+ NativeMML: {scale: 200}
   //TeX: { equationNumbers: { autoNumber: "AMS" } }
 });
 
