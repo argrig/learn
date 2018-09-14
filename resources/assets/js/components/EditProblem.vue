@@ -52,12 +52,9 @@ div
         this.$router.push("/problem/show/"+id) ;
       },
       render: function(event) {
-        //console.log("render executed..."+this.$refs.rendered.innerHTML) ;
-        //console.log((window.MathJax) ? "MJ initialized" : "NO") ;
         window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub,this.$refs.rendered]);
       },
       submit: function() {
-        //console.log(JSON.stringify(this.formData)) ;
         this.axios.post('/edit/problem/add',this.formData,{headers:{"Cache-Control":"no-cache"}})
         .then (
           (response) => {

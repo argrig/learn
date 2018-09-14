@@ -1,4 +1,4 @@
-export default class MyInit {
+module.exports = class {
   constructor() {
     //console.log("FROM CONSTRUCTOR: " + JSON.stringify(s)) ;
     axios.post('/problem/index')
@@ -12,6 +12,5 @@ export default class MyInit {
           console.log("FROM problem/index : " + error ) ;
         }    
       );
-
   } 
 }

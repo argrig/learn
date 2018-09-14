@@ -20,10 +20,16 @@ class ProblemController extends Controller
 
     public function render($id) {
       $problem = Problem::find($id) ;
-      $process = new Process("pwd") ;
+      $prog = config('my.bindir') . $problem->uname . '_gen_json' ;
+      $process = new Process($prog) ;
       $process->run() ;
-      $out = $process->getOutput();
-      return response()->json(["test"=>"$out",$problem]) ;
+      $out = json_decode($process->getOutput(),true);
+      if(json_last_error() == JSON_ERROR_NONE) {
+        return response()->json(array_merge(["status"=>"ok"],$out['problem'])) ;
+      }
+      else {
+        return response()->json(["status"=>"error", "JSON_LAST_ERROR"=>json_last_error()]) ;
+      }
     }
 
     /**
