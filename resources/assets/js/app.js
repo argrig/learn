@@ -34,6 +34,7 @@ const Stats = Vue.component('Stats', require('./components/Stats.vue'));
 
 const Register = Vue.component('Register', require('./components/Register.vue'));
 const Login = Vue.component('Login', require('./components/Login.vue'));
+const ShowJax = Vue.component('ShowJax', require('./components/ShowJax.vue'));
 
 const routes = [
   { path: '/home', component: Home },

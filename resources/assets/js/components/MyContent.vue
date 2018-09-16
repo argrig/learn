@@ -16,8 +16,8 @@
     props:[],
     data:function(){
       return {
-        menuHeight: 0,
-        statusHeight:0,
+        menuHeight:   30,
+        statusHeight: 30,
       }
     },
     computed: {

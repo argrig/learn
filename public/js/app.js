@@ -22983,7 +22983,7 @@ var OBSERVER_CONFIG = {
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(78);
-module.exports = __webpack_require__(302);
+module.exports = __webpack_require__(305);
 
 
 /***/ }),
@@ -23034,6 +23034,7 @@ var Stats = Vue.component('Stats', __webpack_require__(287));
 
 var Register = Vue.component('Register', __webpack_require__(292));
 var Login = Vue.component('Login', __webpack_require__(297));
+var ShowJax = Vue.component('ShowJax', __webpack_require__(302));
 
 var routes = [{ path: '/home', component: Home }, { path: '/edit/problem', component: EditProblem }, { path: '/edit/test', component: EditTest }, { path: '/edit/theory', component: EditTheory }, { path: '/problem', component: Problem }, { path: '/problem/show/:id', component: ProblemShow }, { path: '/theory', component: Theory }, { path: '/test', component: Test }, { path: '/stats', component: Stats }, { path: '/login', component: Login }, { path: '/register', component: Register }];
 
@@ -70483,8 +70484,8 @@ module.exports = {
   props: [],
   data: function data() {
     return {
-      menuHeight: 0,
-      statusHeight: 0
+      menuHeight: 30,
+      statusHeight: 30
     };
   },
   computed: {
@@ -72031,6 +72032,9 @@ module.exports = Component.exports
 //
 //
 //
+//
+//
+//
 
 module.exports = {
   mounted: function mounted() {
@@ -72039,6 +72043,7 @@ module.exports = {
 
   data: function data() {
     return {
+      fs: 2,
       got: "",
       s: window.s,
       id: this.$route.params.id,
@@ -72048,12 +72053,19 @@ module.exports = {
   computed: {
     pRender: function pRender() {
       return this.s.problems && this.s.problems[this.id] && this.s.problems[this.id].pRender ? this.s.problems[this.id].pRender : null;
+    },
+    myStyleObj: function myStyleObj() {
+      return { fontSize: this.fs + "em" };
     }
   },
   methods: {
+    chFontSize: function chFontSize(size) {
+      this.fs += size;
+      console.log(this.fs);
+    },
     jax: function jax() {
       console.log("JAXING!");
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, this.$refs.pText]);
+      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, this.$refs.mainShow]);
     },
     dbId: function dbId() {
       return s.problems[this.id].id;
@@ -72061,6 +72073,7 @@ module.exports = {
     getProblem: function getProblem() {
       var _this = this;
 
+      //console.log("ГЕНЕРИРУЕМ...") ;
       if (this.s.problems.length > 0 && typeof this.id !== 'undefined') {
         url = "/problem/render/" + this.dbId();
         this.axios.post(url).then(function (response) {
@@ -72070,6 +72083,7 @@ module.exports = {
             delete data["status"];
             _this.$set(_this.s.problems[_this.id], 'pData', data);
             _this.$set(s.problems[_this.id], 'pRender', MyRender.render(data));
+            //this.$refs.mainShow.$emit('can-jax') ;
             console.log(JSON.stringify(_this.pRender));
           } else {
             console.log("ERROR: " + JSON.stringify(data));
@@ -72093,26 +72107,49 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "container" }, [
-    typeof _vm.s.problems[_vm.id] !== "undefined"
-      ? _c("h2", [_vm._v(_vm._s(_vm.s.problems[_vm.id].name))])
-      : _c("h2", [
-          _vm._v("Ждем данных  "),
-          _c("span", { staticClass: "fa fa-refresh fa-spin" })
-        ]),
-    this.pRender
-      ? _c("div", {
-          ref: "pText",
-          staticClass: "container",
-          staticStyle: { "font-size": "2em" },
-          domProps: { innerHTML: _vm._s(this.pRender.A) },
-          on: { change: this.jax, click: this.jax }
-        })
-      : _c("div", { staticClass: "container" }, [
-          _vm._v("Генерируем задачу  "),
-          _c("span", { staticClass: "fa fa-refresh fa-spin" })
-        ])
-  ])
+  return _c(
+    "div",
+    { staticClass: "container" },
+    [
+      typeof _vm.s.problems[_vm.id] !== "undefined"
+        ? _c("h2", [
+            _vm._v(_vm._s(_vm.s.problems[_vm.id].name) + "  "),
+            _c("button", {
+              staticClass: "fa fa-search-plus",
+              on: {
+                click: function($event) {
+                  _vm.chFontSize(0.1)
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c("button", {
+              staticClass: "fa fa-search-minus",
+              on: {
+                click: function($event) {
+                  _vm.chFontSize(-0.1)
+                }
+              }
+            })
+          ])
+        : _c("h2", [
+            _vm._v("Ждем данных  "),
+            _c("span", { staticClass: "fa fa-refresh fa-spin" })
+          ]),
+      this.pRender
+        ? _c("show-jax", {
+            ref: "mainShow",
+            style: _vm.myStyleObj,
+            attrs: { myHTML: this.pRender.A },
+            on: { "can-jax": this.jax }
+          })
+        : _c("div", { staticClass: "container" }, [
+            _vm._v("Генерируем задачу  "),
+            _c("span", { staticClass: "fa fa-refresh fa-spin" })
+          ])
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -72766,6 +72803,105 @@ if (false) {
 
 /***/ }),
 /* 302 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(7)
+/* script */
+var __vue_script__ = __webpack_require__(303)
+/* template */
+var __vue_template__ = __webpack_require__(304)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/ShowJax.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-27f2d806", Component.options)
+  } else {
+    hotAPI.reload("data-v-27f2d806", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 303 */
+/***/ (function(module, exports) {
+
+//
+//
+//
+//
+
+module.exports = {
+  mounted: function mounted() {
+    window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, this.$refs.myShowJax]);
+  },
+
+  data: function data() {
+    return {
+      fontSize: 2
+    };
+  },
+  props: ['myHTML'],
+  watch: {
+    myHTML: function myHTML() {
+      console.log("INNER CHANGED!");
+      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, this.$refs.myShowJax]);
+    }
+  }
+};
+
+/***/ }),
+/* 304 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", {
+    ref: "myShowJax",
+    staticClass: "container",
+    domProps: { innerHTML: _vm._s(_vm.myHTML) }
+  })
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-27f2d806", module.exports)
+  }
+}
+
+/***/ }),
+/* 305 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
