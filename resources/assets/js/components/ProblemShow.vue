@@ -6,7 +6,7 @@
       button.fa.fa-search-minus(@click="chFontSize(-0.1)") 
     h2(v-else) Ждем данных &nbsp;
       span.fa.fa-refresh.fa-spin
-    show-jax(ref="mainShow" :style="myStyleObj" v-if="this.pRender" :myHTML="this.pRender.A" @can-jax="this.jax")
+    show-jax(ref="mainShow" :style="myStyleObj" v-if="this.pRender" :myHTML="this.pRender")
     .container(v-else) Генерируем задачу &nbsp;
       span.fa.fa-refresh.fa-spin
 </template>
@@ -39,29 +39,27 @@
         this.fs+=size ;
         console.log(this.fs) ;
       },
-      jax: function(){
-        console.log("JAXING!") ;
-        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub,this.$refs.mainShow]);
-      },
-      dbId: function() { return s.problems[this.id].id; },
       getProblem: function () {
-        //console.log("ГЕНЕРИРУЕМ...") ;
-        if(this.s.problems.length > 0 && typeof(this.id) !== 'undefined') {
-          url = "/problem/render/"+this.dbId() ;
-          this.axios.post(url).then(response => {
-            let data = response.data ;
-            if(data["status"] == "ok") {
-              //console.log(JSON.stringify(data)) ;
-              delete data["status"] ;
-              this.$set(this.s.problems[this.id],'pData', data) ;
-              this.$set(s.problems[this.id],'pRender', MyRender.render(data)) ;
-              //this.$refs.mainShow.$emit('can-jax') ;
-              console.log(JSON.stringify(this.pRender)) ;
-            }
-            else{
-              console.log("ERROR: " + JSON.stringify(data)) ;
-            }
-          }).catch(error =>{console.log("ERROR "+url + ": "+error)}) ; 
+        let prob = this.s.problems ;
+          if(prob.length > 0 && typeof(this.id) !== 'undefined') {
+            if(typeof(prob[this.id].pData == 'undefined')) {
+            url = "/problem/render/"+prob[this.id].id ;
+            this.axios.post(url).then(response => {
+              let data = response.data ;
+              if(data["status"] == "ok") {
+                delete data["status"] ;
+                this.$set(prob[this.id],'pData', data) ;
+                this.$set(prob[this.id],'pRender', MyRender.merge(MyRender.render(data), prob[this.id].template)) ;
+                console.log(JSON.stringify(prob[this.id].pRender)) ;
+              }
+              else{
+                console.log("ERROR: " + JSON.stringify(data)) ;
+              }
+            }).catch(error =>{console.log("ERROR "+url + ": "+error)}) ; 
+          }
+          else {
+              
+          }
           clearInterval(this.got) ;
         }
         else {

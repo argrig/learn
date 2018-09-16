@@ -69849,8 +69849,8 @@ module.exports = function () {
       var ret = {};
       for (var key in obj) {
         var dt = obj[key].data;
-        if (typeof dt.xvar !== 'undefined') {
-          xvar = dt.xvar;
+        if (typeof key.xvar !== 'undefined') {
+          xvar = key.xvar;
         };
         switch (obj[key].type) {
           case "linear_system":
@@ -69860,6 +69860,15 @@ module.exports = function () {
       }
       //console.log("RETURN IS:" + ret.A) ;
       return ret;
+    }
+  }, {
+    key: 'merge',
+    value: function merge(obj, template) {
+      for (var key in obj) {
+        var regex = new RegExp('<%\\s*' + key + '\\s*%>');
+        template = template.replace(regex, obj[key]);
+      }
+      return template;
     }
   }, {
     key: 'render_linear_system',
@@ -72022,6 +72031,8 @@ module.exports = Component.exports
 /* 275 */
 /***/ (function(module, exports) {
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 //
 //
 //
@@ -72063,34 +72074,27 @@ module.exports = {
       this.fs += size;
       console.log(this.fs);
     },
-    jax: function jax() {
-      console.log("JAXING!");
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, this.$refs.mainShow]);
-    },
-    dbId: function dbId() {
-      return s.problems[this.id].id;
-    },
     getProblem: function getProblem() {
       var _this = this;
 
-      //console.log("ГЕНЕРИРУЕМ...") ;
-      if (this.s.problems.length > 0 && typeof this.id !== 'undefined') {
-        url = "/problem/render/" + this.dbId();
-        this.axios.post(url).then(function (response) {
-          var data = response.data;
-          if (data["status"] == "ok") {
-            //console.log(JSON.stringify(data)) ;
-            delete data["status"];
-            _this.$set(_this.s.problems[_this.id], 'pData', data);
-            _this.$set(s.problems[_this.id], 'pRender', MyRender.render(data));
-            //this.$refs.mainShow.$emit('can-jax') ;
-            console.log(JSON.stringify(_this.pRender));
-          } else {
-            console.log("ERROR: " + JSON.stringify(data));
-          }
-        }).catch(function (error) {
-          console.log("ERROR " + url + ": " + error);
-        });
+      var prob = this.s.problems;
+      if (prob.length > 0 && typeof this.id !== 'undefined') {
+        if (_typeof(prob[this.id].pData == 'undefined')) {
+          url = "/problem/render/" + prob[this.id].id;
+          this.axios.post(url).then(function (response) {
+            var data = response.data;
+            if (data["status"] == "ok") {
+              delete data["status"];
+              _this.$set(prob[_this.id], 'pData', data);
+              _this.$set(prob[_this.id], 'pRender', MyRender.merge(MyRender.render(data), prob[_this.id].template));
+              console.log(JSON.stringify(prob[_this.id].pRender));
+            } else {
+              console.log("ERROR: " + JSON.stringify(data));
+            }
+          }).catch(function (error) {
+            console.log("ERROR " + url + ": " + error);
+          });
+        } else {}
         clearInterval(this.got);
       } else {
         console.log("Данных пока нет ...");
@@ -72140,8 +72144,7 @@ var render = function() {
         ? _c("show-jax", {
             ref: "mainShow",
             style: _vm.myStyleObj,
-            attrs: { myHTML: this.pRender.A },
-            on: { "can-jax": this.jax }
+            attrs: { myHTML: this.pRender }
           })
         : _c("div", { staticClass: "container" }, [
             _vm._v("Генерируем задачу  "),

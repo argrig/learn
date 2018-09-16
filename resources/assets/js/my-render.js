@@ -3,7 +3,7 @@ module.exports = class {
     let ret = {} ;
     for(let key in obj) {
       let dt   = obj[key].data ;
-      if(typeof(dt.xvar) !== 'undefined') {xvar=dt.xvar} ;
+      if(typeof(key.xvar) !== 'undefined') {xvar=key.xvar} ;
       switch(obj[key].type) {
         case "linear_system" :
           ret[key] = this.render_linear_system(dt,xvar) ;
@@ -13,6 +13,14 @@ module.exports = class {
     //console.log("RETURN IS:" + ret.A) ;
     return ret ;
   } ;
+
+  merge(obj,template) {
+    for(let key in obj) {
+      let regex = new RegExp('<%\\s*' + key + '\\s*%>') ; 
+      template = template.replace(regex,obj[key]) ; 
+    }
+    return template ;
+  }
 
   render_linear_system(dt, xvar) {
     let ret="\\begin{array}{" + "rc".repeat(dt[0].length-1) + "r}\n" ;
