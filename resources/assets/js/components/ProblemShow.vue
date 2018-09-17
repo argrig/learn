@@ -40,17 +40,18 @@
         console.log(this.fs) ;
       },
       getProblem: function () {
-        let prob = this.s.problems ;
-          if(prob.length > 0 && typeof(this.id) !== 'undefined') {
-            if(typeof(prob[this.id].pData == 'undefined')) {
+        let prob = window.s.problems ;
+        if(prob.length > 0 && typeof(this.id) !== 'undefined') {
+          if(typeof(prob[this.id].pData) === "undefined") {
             url = "/problem/render/"+prob[this.id].id ;
-            this.axios.post(url).then(response => {
+            this.axios.post(url).then((response) => {
               let data = response.data ;
               if(data["status"] == "ok") {
                 delete data["status"] ;
-                this.$set(prob[this.id],'pData', data) ;
+                prob[this.id].pData = data ;
+                //prob[this.id].pRender = MyRender.merge(MyRender.render(data), prob[this.id].template) ;
+                //console.log("GLOBAL s: " + JSON.stringify(window.s.problems[this.id].pData)) ;
                 this.$set(prob[this.id],'pRender', MyRender.merge(MyRender.render(data), prob[this.id].template)) ;
-                console.log(JSON.stringify(prob[this.id].pRender)) ;
               }
               else{
                 console.log("ERROR: " + JSON.stringify(data)) ;
@@ -58,7 +59,7 @@
             }).catch(error =>{console.log("ERROR "+url + ": "+error)}) ; 
           }
           else {
-              
+            console.log("Задача уже была сгенерирована... Используем кеш") ;
           }
           clearInterval(this.got) ;
         }

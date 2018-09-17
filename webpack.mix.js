@@ -14,6 +14,11 @@ let mix = require('laravel-mix');
 //mix.pug = require('laravel-mix-pug');
 
 mix.webpackConfig({
+  resolve: {
+    alias: {
+      '@': path.resolve('resources/assets/sass')
+    }
+  },
   watchOptions: {
     ignored: [/node_modules/,/vendor/,/storage/,/database/,/bootstrap/]
   }

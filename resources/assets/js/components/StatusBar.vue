@@ -19,7 +19,7 @@
   }
 </script>
 <style lang="scss" scoped>
-@import "myvars.scss" ;
+@import "~@/_myvars.scss" ;
 .myfooter {
   position:fixed ;
   bottom:0;

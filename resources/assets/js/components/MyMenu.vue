@@ -4,11 +4,13 @@ header
       .navbar-brand.mybrand
         img.mylogo(ref="mylogo" src="/img/agplusmidi.png")
         span.my-logo-text {{ appname }}
-      button.navbar-toggler.navbar-light(type="button" data-toggle="collapse" data-target="#mynav" aria-controls="mynav" aria-expanded="false" aria-label="Показать меню")
+      button.navbar-toggler.navbar-light(type="button" data-toggle="collapse" data-target="#mynav" 
+        aria-controls="mynav" aria-expanded="false" aria-label="Показать меню")
         span.navbar-toggler-icon
       .collapse.navbar-collapse#mynav
         ul.navbar-nav.mr-auto#lmenu
-          menu-item(v-for="item in lmenu" :key="item.id" :dt="item")
+          menu-item(v-for="item in lmenu" ref="item.id" :key="item.id" :dt="item" 
+            @click="clickEvent(item.id)")
         ul.navbar-nav.ml-auto#rmenu
           menu-item(v-for="item in rmenu" :key="item.id" :dt="item")
 </template>
@@ -21,6 +23,7 @@ header
     },
     data: function() {
       return {
+        curMenu: "",
         lmenu:[
           {class:"fa fa-home", id:"home", href:"/home", title:"Домой"},
           {class:"fa fa-pencil-square-o", id:"edit", href:"", title:"Редактировать", 
@@ -42,18 +45,22 @@ header
       }      
     },
     props:{appname:{default:"Алгебра"}},
-    //computed: {
-     // myLogoText: function() {
-       // if(this.isMounted == true) {
-         // left = this.$refs.mylogo.clientWidth + "px" ;
-          //return {paddingLeft: left, fontWeight:"bold"} ;
-       // }
-      //}
-    //}
+    methods: {
+      clickEvent: function(id) {
+        console.log("trying to emit event...") ;
+        this.$bus.$emit('menu-click', id) ;
+      },
+      isCurrent: function(item) {
+        return (item == this.curMenu) ? true : false ;
+      },
+      toggleCurrent(item) {
+        this.curMenu = item ;
+      }
+    }
   } ;
 </script>
 <style lang="scss" scoped>
-  @import "myvars.scss" ; 
+@import "~@/_myvars.scss" ;
   .mynav {
     background-color: $bg-dark ;
     padding:0;

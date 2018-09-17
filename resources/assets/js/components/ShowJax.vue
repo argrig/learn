@@ -5,17 +5,14 @@
 <script>
   module.exports = {
     mounted() {
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub,this.$refs.myShowJax]);
+      this.renderJax() ;
     },
-    data: function() {
-      return {
-        fontSize: 2,
-      }
+    updated() {
+      this.renderJax() ;
     },
     props:['myHTML'],
-    watch: {
-      myHTML: function() {
-        console.log("INNER CHANGED!") ;
+    methods: {
+      renderJax: function() {
         window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub,this.$refs.myShowJax]);
       }
     }

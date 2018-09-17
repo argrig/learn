@@ -5,33 +5,33 @@
         .col-md-6
           .form-group
             label.my-label(for="uname") Краткое имя:
-            input.form-control#uname(type="text" v-model="formData.uname" placeholder="например: example_problem2")
+            input.form-control#uname(type="text" v-model="formData.uname" placeholder="Введите имя. Только латиница, подчеркивание и цифры")
             small.form-text.text-muted(pattern="[a-z_0-9]")
               | Уникальный идентификатор, допустимые символы: [a-z_0-9]
         .col-md-6
           .from-group
             label.my-label(for="name") Название:
-            input.form-control#name(type="text" v-model="formData.name" placeholder="например: Решение системы линейных")
+            input.form-control#name(type="text" v-model="formData.name" placeholder="Введите название")
             small.form-text.text-muted Полное название задачи
       .row
         .col-md-6
           .form-group
-            label.my-label(for="template") Шаблон условия:
+            label.my-label(for="template") Условие:
             textarea.form-control#template(rows="4" v-model="formData.template" 
-              placeholder="Решить систему уравнений:\n $$ [[System]] $$")
-            small.form-text.text-muted Шаблон условия задачи: [[x]] для переменной x 
+              placeholder='Введите шаблон условия. <% %> для подстановки данных')
+            small.form-text.text-muted Шаблон условия задачи: <%x%> для переменной x 
         .col-md-6
           .form-group
-            label.my-label(for="ans_template") Шаблон ответа:
+            label.my-label(for="ans_template") Ответ:
             textarea.form-control#ans_template(rows="4" v-model="formData.ans_template"
-              placeholder="Решение системы: $ [[ans_vector]] $")
-            small.form-text.text-muted Шаблон ответа задачи: [[x]] для переменной x 
+              placeholder="Введите шаблон ответа. <% %> для подстановки данных")
+            small.form-text.text-muted Шаблон ответа задачи: <%system%> для переменной system 
       .row
         .col-md-6
           .form-group
             label.my-label(for="ans_form") Форма ответа:
             textarea.form-control#ans_form(rows="4" v-model="formData.ans_form"
-              placeholder='[{id:"step",label:"Ступенчатый вид",type:"textarea", small:"кол-во пробелов не важно"},{...}]')
+              placeholder="Введите валидный JSON с полями формы ответа")
             small.form-text.text-muted Поля формы ответа в формате JSON
         .col-md-6
           .row
@@ -66,8 +66,8 @@
         this.formData = {
           uname: "gauss_eqn",
           name: "исследование СЛУ методом Гаусса",
-          template: "Исследовать СЛУ: $$ [[A]] $$",
-          ans_template: "главные неизвестные: $ [[main_vect]] $\nтип: [[system_type]] ...",
+          template: "Исследовать СЛУ: $$ <%A%> $$",
+          ans_template: "главные неизвестные: $ <%main_vect%> $\nтип: <%system_type%> ...",
           ans_form: '[{"id":"step","label":"Ступенчатый вид","type":"textarea", "small":"кол-во пробелов не важно"}]'
         } ;
       },
