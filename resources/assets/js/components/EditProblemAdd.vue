@@ -1,5 +1,6 @@
 <template lang="pug">
-  .my-subtitle Добавление задачи
+  .my-subtitle(v-if="!pFields") Добавление задачи
+  .my-subtitle(v-else) Изменение задачи
     form(ref="addProb")
       .row
         .col-md-6
@@ -38,10 +39,11 @@
             .col-md-4
               .form-group
                 button.btn.btn-primary.my-button.fa.fa-plus-square-o(type="button" @click="submit")
-                  span.my-button-text &nbsp; Добавить
+                  span(v-if="!pFields").my-button-text &nbsp; Добавить
+                  span(v-else).my-button-text &nbsp; Обновить
             .col-md-4
               .form-group
-                button.btn.btn-light.fa.fa-qustion(type="button" @click="example")
+                button(v-if="!pFields").btn.btn-light.fa.fa-qustion(type="button" @click="example")
                   span.my-button-text ? &nbsp; Пример
             .col-md-4
               .form-group
@@ -55,6 +57,7 @@
     mounted() {
       //console.log('ProblemEditorAdd mounted...')
     },
+    props:['pFields'],
     data:function(){
       return {
         formData:{ uname: "", name: "", template: "", ans_template: "", ans_form: ""}
@@ -62,10 +65,10 @@
     },
     methods: {
       example: function () {
-        console.log("running example...") ;
+        //console.log("running example...") ;
         this.formData = {
-          uname: "gauss_eqn",
-          name: "исследование СЛУ методом Гаусса",
+          uname: "my_gaus_eqn",
+          name: "Исследование системы линейных уравнений методом Гаусса",
           template: "Исследовать СЛУ: $$ <%A%> $$",
           ans_template: "главные неизвестные: $ <%main_vect%> $\nтип: <%system_type%> ...",
           ans_form: '[{"id":"step","label":"Ступенчатый вид","type":"textarea", "small":"кол-во пробелов не важно"}]'

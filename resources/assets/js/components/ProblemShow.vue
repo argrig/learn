@@ -13,7 +13,7 @@
 
 <script>
   module.exports = {
-    mounted() {
+    beforeMount() {
       this.got = setInterval(this.getProblem, 500) ;
     },
     data:function() {

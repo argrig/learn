@@ -8,10 +8,18 @@ div
           i.fa.fa-list-ul.my-title-link
             span.my-title-link-text &nbsp;Список
         .my-subtitle Список задач
-          .b-list-group
-            b-list-group-item.my-list-item(button v-if="s.problems.length>0" v-for="(item, index) in s.problems" 
-              :id="item.id" :key="index" @click="problemShow(index)") {{item.name}}
-            b-list-group-item.my-list-item(v-else) Ждем данных
+          .list-group
+            a.list-group-item.list-group-item-action.my-list-item(v-if="s.problems.length>0"
+              v-for="(item, index) in s.problems" :id="item.id" :key="index"
+              @mouseover="mouseOver(index,'on')" @mouseleave="mouseOver(index,'off')")
+              .row
+                .col {{item.name}}
+                .col.text-right(v-if="!showButton[index]" :style="{display: 'none'}")
+                .col.text-right(v-else :style="showButton[index]")
+                  button.btn.btn-light.fa.fa-cogs(type='button' variant='light' @click="problemShow(index)") &nbsp; Показ
+                  |&nbsp;
+                  button.btn.btn-light.fa.fa-pencil(variant='light') &nbsp; Изменить
+            a.list-group-item.my-list-item(v-else) Ждем данных
               span.fa.fa-refresh.fa-spin
       b-tab(title="Добавить")
         template(slot="title")
@@ -36,6 +44,9 @@ div
     },
     data:function(){
       return {
+        showButton: [],
+        styleNone: {display: 'none'},
+        styleBlock:{display: 'block'},
         s: window.s,
         mathjaxSrc: "$$\\int_a^b\\limits f(x) dx$$\n\n",
         formData:{
@@ -47,8 +58,15 @@ div
         }
       }
     },
+    computed: {
+    },
     methods: {
+      mouseOver: function(index, state) {
+        this.$set(this.showButton, index, (state=='on') ? this.styleBlock : this.styleNone) ;
+        //console.log(JSON.stringify(this.showButton)) ;
+      },
       problemShow: function(id) {
+        console.log(id) ;
         this.$router.push("/problem/show/"+id) ;
       },
       render: function(event) {
