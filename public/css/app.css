@@ -13870,7 +13870,10 @@ a.text-dark:focus {
 }
 
 .my-button {
-  background-color: #ddd;
+  padding-right: 7px;
+  padding-left: 7px;
+  padding-top: 0px;
+  padding-bottom: 0px;
   color: #444;
 }
 
@@ -13881,8 +13884,19 @@ a.text-dark:focus {
 }
 
 .my-list-item {
+  padding: 5px;
   font-family: Verdana;
   font-size: 100%;
   font-weight: normal;
+}
+
+.my-collapse {
+  color: #444;
+  font: Tahoma;
+  font-size: 1.2em;
+}
+
+.my-collapse:hover {
+  color: #444;
 }
 

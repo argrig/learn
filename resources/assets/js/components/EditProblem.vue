@@ -16,9 +16,9 @@ div
                 .col {{item.name}}
                 .col.text-right(v-if="!showButton[index]" :style="{display: 'none'}")
                 .col.text-right(v-else :style="showButton[index]")
-                  button.btn.btn-light.fa.fa-cogs(type='button' variant='light' @click="problemShow(index)") &nbsp; Показ
-                  |&nbsp;
-                  button.btn.btn-light.fa.fa-pencil(variant='light') &nbsp; Изменить
+                  button.btn.btn-light.fa.fa-cogs.my-button(variant='light' @click="problemShow(index)") &nbsp; Показ
+                  |&nbsp;&nbsp;
+                  button.btn.btn-light.fa.fa-pencil.my-button(variant='light' @click="problemEdit(index)") &nbsp; Изменить
             a.list-group-item.my-list-item(v-else) Ждем данных
               span.fa.fa-refresh.fa-spin
       b-tab(title="Добавить")
@@ -31,17 +31,11 @@ div
           i.fa.fa-pencil.my-title-link
             span.my-title-link-text &nbsp;Изменить
         div Выберите задачу из списка ...
-        textarea(rows="5" cols="50" label="mathjaxTest" v-model="mathjaxSrc")
-        button(type="button" label="отобразить" @click="this.render") Отобразить
-        div(ref="rendered" v-html="mathjaxSrc")
 
 </template>
 
 <script>
   module.exports = {
-    mounted() {
-      //console.log("TEST: " + JSON.stringify(window.s.problems)) ;
-    },
     data:function(){
       return {
         showButton: [],
@@ -58,40 +52,19 @@ div
         }
       }
     },
-    computed: {
-    },
     methods: {
       mouseOver: function(index, state) {
         this.$set(this.showButton, index, (state=='on') ? this.styleBlock : this.styleNone) ;
-        //console.log(JSON.stringify(this.showButton)) ;
       },
       problemShow: function(id) {
         console.log(id) ;
-        this.$router.push("/problem/show/"+id) ;
+        this.$router.push("/problem/show/" + id) ;
       },
-      render: function(event) {
-        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub,this.$refs.rendered]);
-      },
-      submit: function() {
-        this.axios.post('/edit/problem/add',this.formData,{headers:{"Cache-Control":"no-cache"}})
-        .then (
-          (response) => {
-            console.log("RESPONSE_DATA: " + JSON.stringify(response.data)) ;
-            switch(response.data.status) {
-              case "ok" :
-                console.log("OK");
-                break;
-              case "error" :
-                console.log("ERROR") ;
-                break;
-            }
-          }
-        )
-        .catch (
-          (error) => {
-            console.log(error)
-          }
-        );
+      problemEdit: function(id) {
+        path = "/problem/edit/" + id ;
+        params = {"pFields": s.problems[id]} ;
+        console.log(JSON.stringify(params)) ;
+        this.$router.push({name: 'problem-edit', params: {id: id, pFields: s.problems[id]} }) ;
       }
     }
   }

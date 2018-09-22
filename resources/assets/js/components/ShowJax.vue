@@ -18,3 +18,10 @@
     }
   }
 </script>
+
+<style lang="scss">
+.my-jax {
+  font-family: Verdana, Geneva, sans-serif ;
+}
+</style>
+

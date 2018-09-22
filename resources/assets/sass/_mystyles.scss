@@ -28,7 +28,11 @@
 }
 
 .my-button{
-  background-color: $bg-dark ;
+  padding-right:7px;
+  padding-left:7px;
+  padding-top:0px;
+  padding-bottom:0px;
+  //background-color: $bg-dark ;
   color: $fg-dark ;
 }
 .my-button-text{
@@ -38,7 +42,17 @@
 }
 
 .my-list-item{
+  padding: 5px ;
   font-family: $text-font ;
   font-size: 100% ;
   font-weight: normal ;
+}
+
+.my-collapse {
+  color: $fg-dark ;
+  font: $title-font ;
+  font-size: 1.2em;
+}
+.my-collapse:hover {
+  color: $fg-dark ;
 }

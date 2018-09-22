@@ -1,12 +1,12 @@
 <template lang="pug">
-  .my-subtitle(v-if="!pFields") Добавление задачи
-  .my-subtitle(v-else) Изменение задачи
+  .my-subtitle {{titleText}}
     form(ref="addProb")
       .row
         .col-md-6
           .form-group
             label.my-label(for="uname") Краткое имя:
-            input.form-control#uname(type="text" v-model="formData.uname" placeholder="Введите имя. Только латиница, подчеркивание и цифры")
+            input.form-control#uname(type="text" v-model="formData.uname" 
+              placeholder="Введите имя. Только латиница, подчеркивание и цифры")
             small.form-text.text-muted(pattern="[a-z_0-9]")
               | Уникальный идентификатор, допустимые символы: [a-z_0-9]
         .col-md-6
@@ -38,16 +38,15 @@
           .row
             .col-md-4
               .form-group
-                button.btn.btn-primary.my-button.fa.fa-plus-square-o(type="button" @click="submit")
-                  span(v-if="!pFields").my-button-text &nbsp; Добавить
-                  span(v-else).my-button-text &nbsp; Обновить
+                button.btn.fa.fa-plus-square-o.my-button(type="button" @click="submit")
+                  span.my-button-text &nbsp; {{buttonText}}
             .col-md-4
               .form-group
-                button(v-if="!pFields").btn.btn-light.fa.fa-qustion(type="button" @click="example")
+                button(v-if="!pFields").btn.btn-light.fa.fa-qustion.my-button(type="button" @click="example")
                   span.my-button-text ? &nbsp; Пример
             .col-md-4
               .form-group
-                button.btn.btn-light(type="reset")
+                button.btn.btn-light.my-button(type="reset")
                   span.my-button-text &times;&nbsp; Очистить
 </template>
 
@@ -55,12 +54,23 @@
 <script>
   module.exports = {
     mounted() {
-      //console.log('ProblemEditorAdd mounted...')
+      //console.log('DATA: ' + JSON.stringify(this.$route.params))
     },
     props:['pFields'],
     data:function(){
       return {
-        formData:{ uname: "", name: "", template: "", ans_template: "", ans_form: ""}
+      }
+    },
+    computed: {
+      buttonText: function() {
+        return (this.pFields) ? "Обновить" : "Добавить" ;
+      },
+      titleText: function() {
+        return (this.pFields) ? "Обновление задачи" : "Добавление задачи" ;
+      },
+      formData: function() {
+        return (this.pFields) ? this.pFields : 
+          { uname: "", name: "", template: "", ans_template: "", ans_form: ""} ;
       }
     },
     methods: {
@@ -76,16 +86,20 @@
       },
       submit: function() {
         //console.log(JSON.stringify(this.formData)) ;
-        this.axios.post('/edit/problem/add',this.formData,{headers:{"Cache-Control":"no-cache"}})
+        url = (this.pFields) ? "/edit/problem/update" : "/edit/problem/add" ;
+        postData =  (({id,name,uname,template,ans_template,ans_form})  =>
+                     ({id,name,uname,template,ans_template,ans_form}))  (this.formData) ;
+        //console.log("URL: " + url) ;
+        this.axios.post(url,postData,{headers:{"Cache-Control":"no-cache"}})
         .then (
           (response) => {
-            console.log("RESPONSE_DATA: " + JSON.stringify(response.data)) ;
+            //console.log("RESPONSE_DATA: " + JSON.stringify(response.data)) ;
             switch(response.data.status) {
               case "ok" :
-                console.log("OK");
+                console.log("EditProblemAdd: OK");
                 break;
               case "error" :
-                console.log("ERROR") ;
+                console.log("EditProblemAdd: ERROR") ;
                 break;
             }
           }

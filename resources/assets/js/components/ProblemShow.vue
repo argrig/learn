@@ -1,28 +1,39 @@
 <template lang="pug">
   .container
     h2(v-if="typeof(s.problems[id]) !== 'undefined'") {{s.problems[id].name}} &nbsp;
-      button.fa.fa-search-plus(@click="chFontSize(0.1)")
-      | &nbsp;
-      button.fa.fa-search-minus(@click="chFontSize(-0.1)") 
     h2(v-else) Ждем данных &nbsp;
       span.fa.fa-refresh.fa-spin
-    show-jax(ref="mainShow" :style="myStyleObj" v-if="this.pRender" :myHTML="this.pRender")
-    .container(v-else) Генерируем задачу &nbsp;
-      span.fa.fa-refresh.fa-spin
+    ul
+      li
+        a.my-collapse(href="#" v-b-toggle.problem="" @click="toggleChevron(0)") Условие &nbsp;
+          span.fa(:class="'fa-chevron-' + chevron[0]")
+        button.btn.btn-light.fa.fa-search-plus(@click="chFontSize(0.1)")
+        button.btn.btn-light.fa.fa-search-minus(@click="chFontSize(-0.1)") 
+        b-collapse#problem(visible)
+          show-jax(ref="mainShow" :style="myStyleObj" v-if="this.pRender" :myHTML="this.pRender")
+          .container(v-else) Генерируем задачу &nbsp;
+            span.fa.fa-refresh.fa-spin
+      li
+        a.my-collapse(href="#" v-b-toggle.answer="" @click="toggleChevron(1)") Ввод ответа &nbsp;
+          span.fa(:class="'fa-chevron-' + chevron[1]")
+        b-collapse#answer(visible v-if="s.problems[id]") {{s.problems[id].ans_form}}
+      li
+        a.my-collapse(href="#" v-b-toggle.trueAns="" @click="toggleChevron(2)") Правильный ответ &nbsp;
+          span.fa(:class="'fa-chevron-' + chevron[2]")
 </template>
 
 <script>
   module.exports = {
-    beforeMount() {
+    mounted() {
       this.got = setInterval(this.getProblem, 500) ;
     },
     data:function() {
       return {
-        fs: 2,
+        fs: 1.5,
         got: "",
         s: window.s,
         id: this.$route.params.id,
-        rendered: {},
+        chevron: ["down","right","right"]
       }
     },
     computed: {
@@ -35,9 +46,12 @@
       }
     },
     methods: {
+      toggleChevron: function(i) {
+        this.$set(this.chevron,i, (this.chevron[i]=='down') ? 'right' : 'down') ;
+      },
       chFontSize: function(size) {
         this.fs+=size ;
-        console.log(this.fs) ;
+        //console.log(this.fs) ;
       },
       getProblem: function () {
         let prob = window.s.problems ;
@@ -48,9 +62,10 @@
               let data = response.data ;
               if(data["status"] == "ok") {
                 delete data["status"] ;
-                prob[this.id].pData = data ;
+                //prob[this.id].pData = data ;
                 //prob[this.id].pRender = MyRender.merge(MyRender.render(data), prob[this.id].template) ;
                 //console.log("GLOBAL s: " + JSON.stringify(window.s.problems[this.id].pData)) ;
+                this.$set(prob[this.id],'pData',data) ;
                 this.$set(prob[this.id],'pRender', MyRender.merge(MyRender.render(data), prob[this.id].template)) ;
               }
               else{
@@ -70,3 +85,6 @@
     }
   }
 </script>
+
+<style lang="scss">
+</style>

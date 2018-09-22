@@ -43,6 +43,7 @@ const routes = [
   { path: '/edit/theory', component: EditTheory },
   { path: '/problem', component: Problem },
   { path: '/problem/show/:id', component: ProblemShow },
+  { path: '/problem/edit/:id', name: "problem-edit", component: EditProblemAdd, props: true },
   { path: '/theory', component: Theory },
   { path: '/test', component: Test   },
   { path: '/stats', component: Stats },
